@@ -1,3 +1,6 @@
 spring:
   application:
     name: CryptoSageApp
+
+zonda:
+  apiKey: ${ZONDA_API_KEY}
