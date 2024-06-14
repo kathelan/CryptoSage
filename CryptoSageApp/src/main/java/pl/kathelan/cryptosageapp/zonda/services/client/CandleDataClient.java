@@ -30,7 +30,7 @@ public class CandleDataClient {
     private static final String BASE_URL = "https://api.zondacrypto.exchange/rest/trading/candle/history/";
     private final GenericWebClient webClient;
 
-    public CandleHistoryResponse getHistory(String tradingPair, long from, long to) {
+    public CandleHistoryResponse getHistory(String tradingPair, long from, long to, String resolution) {
         WebClient client = WebClient.builder().baseUrl(BASE_URL).build();
         Map<String, String> queryParams = new HashMap<>();
         queryParams.put("from", String.valueOf(from));
@@ -39,7 +39,7 @@ public class CandleDataClient {
         params.setAll(queryParams);
         var responseJson = client.
                 get()
-                .uri(uriBuilder -> uriBuilder.path(tradingPair + "/300").queryParams(params).build())
+                .uri(uriBuilder -> uriBuilder.path(tradingPair + "/" + resolution).queryParams(params).build())
                 .retrieve()
                 .bodyToMono(String.class).block();
 

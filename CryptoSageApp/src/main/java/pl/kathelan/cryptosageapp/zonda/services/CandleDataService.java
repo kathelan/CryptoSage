@@ -13,8 +13,7 @@ public class CandleDataService {
 
     private final CandleDataClient client;
 
-
-    public CandleHistoryResponse getHistory(String pair, long from, long to) {
-        return client.getHistory(pair, from, to);
+    public CandleHistoryResponse getHistory(String pair, long from, long to, String resolution) {
+        return client.getHistory(pair, from, to, resolution);
     }
 }
