@@ -8,7 +8,7 @@ import pl.kathelan.cryptosageapp.zonda.dtos.CryptoPair;
 import pl.kathelan.cryptosageapp.zonda.dtos.Signal;
 import pl.kathelan.cryptosageapp.zonda.dtos.candle.CandleHistoryResponse;
 
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import static java.lang.String.valueOf;
@@ -19,43 +19,53 @@ import static java.lang.String.valueOf;
 public class MACDService {
 
     private final CandleDataService candleDataService;
-    private final List<Double> closingPrices = new CopyOnWriteArrayList<>();
+    private final Map<CryptoPair, List<Double>> closingPricesMap = new EnumMap<>(CryptoPair.class);
 
 
     @Scheduled(fixedRate = 300000)
-    public void getHistoricalPrices() {
-        log.info("Started getting historical prices");
+    public void scheduleHistoricalPrices() {
+        Arrays.stream(CryptoPair.values()).forEach(this::getHistoricalPrices);
+    }
+
+    private void getHistoricalPrices(CryptoPair cryptoPair) {
+        log.info("Started getting historical prices for : {}", cryptoPair);
         long startTime = System.currentTimeMillis();
         long pastTime = startTime - 300000;
         CandleHistoryResponse history;
+
+        List<Double> closingPrices = closingPricesMap.computeIfAbsent(cryptoPair, k -> new CopyOnWriteArrayList<>());
+
         try {
             if (closingPrices.isEmpty()) {
-                history = candleDataService.getHistory(CryptoPair.BTC_PLN.getValue(), startTime - 259200000, startTime, valueOf(259200));
+                history = candleDataService.getHistory(cryptoPair.getValue(), startTime - 259200000, startTime, valueOf(259200));
             } else {
-                history = candleDataService.getHistory(CryptoPair.BTC_PLN.getValue(), pastTime, startTime, valueOf(300));
+                history = candleDataService.getHistory(cryptoPair.getValue(), pastTime, startTime, valueOf(300));
             }
-            addDataToHistoryList(history);
+            addDataToHistoryList(cryptoPair, history);
         } catch (Exception e) {
-            log.error("Error getting historical prices", e);
+            log.error("Error getting historical prices for : {}", cryptoPair, e);
         }
     }
 
-    private void addDataToHistoryList(CandleHistoryResponse candleHistory) {
+
+    private void addDataToHistoryList(CryptoPair cryptoPair, CandleHistoryResponse candleHistory) {
+        List<Double> closingPrices = closingPricesMap.get(cryptoPair);
         candleHistory.getItems().forEach(item -> closingPrices.add(item.getData().getC()));
-        log.info("Added {} new closing prices. Total: {}", candleHistory.getItems().size(), closingPrices.size());
+        log.info("Added {} new closing prices for {}. Total: {}", candleHistory.getItems().size(), cryptoPair, closingPrices.size());
         if (closingPrices.size() < 26) {
-            log.warn("Not enough data to process MACD. Current size: {}", closingPrices.size());
+            log.warn("Not enough data to process MACD for {}. Current size: {}", cryptoPair, closingPrices.size());
         } else {
-            calculateMACD();
+            calculateMACD(cryptoPair);
         }
     }
 
-    private void calculateMACD() {
+    private void calculateMACD(CryptoPair cryptoPair) {
+        List<Double> closingPrices = closingPricesMap.get(cryptoPair);
         double[] pricesArray = closingPrices.stream().mapToDouble(Double::doubleValue).toArray();
         double[] macd = calculateMACDValues (pricesArray);
         double[] signalLine = calculateSignalLine(macd);
         Signal latestSignal = generateSignal(macd, signalLine);
-        log.info("MACD calculated with latest signal: {}", latestSignal);
+        log.info("MACD calculated for {} with latest signal: {}", cryptoPair, latestSignal);
     }
 
     private double[] calculateMACDValues (double[] prices) {
