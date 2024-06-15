@@ -51,7 +51,6 @@ public class CandleDataClient {
         CandleHistoryResponse response = null;
         try {
             response = mapper.readValue(responseJson, CandleHistoryResponse.class);
-            log.info("candle history response: {}", response);
             return response;
         } catch (JsonProcessingException e) {
             return null;

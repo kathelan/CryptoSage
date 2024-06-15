@@ -21,8 +21,7 @@ public class GenericWebClient {
                 .uri(url)
                 .header("Accept", "application/json")
                 .retrieve()
-                .bodyToMono(responseType)
-                .doOnNext(this::logResponse);
+                .bodyToMono(responseType);
     }
 
     public <T> Mono<T> post(String url, Object requestBody, Class<T> responseType) {
@@ -32,11 +31,6 @@ public class GenericWebClient {
                 .header("Content-Type", "application/json")
                 .body(Mono.just(requestBody), requestBody.getClass())
                 .retrieve()
-                .bodyToMono(responseType)
-                .doOnNext(this::logResponse);
-    }
-
-    private <T> void logResponse(T response) {
-        log.info("Received response: {}", response);
+                .bodyToMono(responseType);
     }
 }
