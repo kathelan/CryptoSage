@@ -6,6 +6,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import pl.kathelan.cryptosageapp.zonda.dtos.CryptoPair;
 import pl.kathelan.cryptosageapp.zonda.dtos.candle.CandleData;
 import pl.kathelan.cryptosageapp.zonda.dtos.candle.CandleHistoryResponse;
 import pl.kathelan.cryptosageapp.zonda.dtos.candle.CandleItem;
@@ -33,7 +34,7 @@ class MACDServiceTest {
     void shouldCalculateMACD() {
         Mockito.when(candleDataService.getHistory(anyString(), anyLong(), anyLong(), anyString())).thenReturn(createMockResponse());
 
-        macdService.getHistoricalPrices();
+        macdService.getHistoricalPrices(CryptoPair.BTC_PLN);
 
         verify(candleDataService, times(1)).getHistory(anyString(), anyLong(), anyLong(), anyString());
 

@@ -2,7 +2,6 @@ package pl.kathelan.cryptosageapp.zonda.services;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import pl.kathelan.cryptosageapp.zonda.dtos.CryptoPair;
 import pl.kathelan.cryptosageapp.zonda.dtos.Signal;
@@ -21,13 +20,7 @@ public class MACDService {
     private final CandleDataService candleDataService;
     private final Map<CryptoPair, List<Double>> closingPricesMap = new EnumMap<>(CryptoPair.class);
 
-
-    @Scheduled(fixedRate = 300000)
-    public void scheduleHistoricalPrices() {
-        Arrays.stream(CryptoPair.values()).forEach(this::getHistoricalPrices);
-    }
-
-    private void getHistoricalPrices(CryptoPair cryptoPair) {
+    public void getHistoricalPrices(CryptoPair cryptoPair) {
         log.info("Started getting historical prices for : {}", cryptoPair);
         long startTime = System.currentTimeMillis();
         long pastTime = startTime - 300000;
