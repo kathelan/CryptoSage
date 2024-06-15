@@ -27,7 +27,7 @@ public class MACDService {
     private final WalletOperationService walletOperationService;
 
     public void getHistoricalPrices(CryptoPair cryptoPair) {
-        log.info("Started getting historical prices for : {}", cryptoPair);
+        log.debug("Started getting historical prices for : {}", cryptoPair);
         long startTime = System.currentTimeMillis();
         long pastTime = startTime - 300000;
         CandleHistoryResponse history;
@@ -50,9 +50,9 @@ public class MACDService {
     private void addDataToHistoryList(CryptoPair cryptoPair, CandleHistoryResponse candleHistory) {
         List<Double> closingPrices = closingPricesMap.get(cryptoPair);
         candleHistory.getItems().forEach(item -> closingPrices.add(item.getData().getC()));
-        log.info("Added {} new closing prices for {}. Total: {}", candleHistory.getItems().size(), cryptoPair, closingPrices.size());
+        log.debug("Added {} new closing prices for {}. Total: {}", candleHistory.getItems().size(), cryptoPair, closingPrices.size());
         if (closingPrices.size() < 26) {
-            log.warn("Not enough data to process MACD for {}. Current size: {}", cryptoPair, closingPrices.size());
+            log.debug("Not enough data to process MACD for {}. Current size: {}", cryptoPair, closingPrices.size());
         } else {
             calculateMACD(cryptoPair);
         }
@@ -65,7 +65,7 @@ public class MACDService {
         double[] signalLine = calculateSignalLine(macd);
         Signal latestSignal = generateSignal(macd, signalLine);
         latestSignalMap.put(cryptoPair, latestSignal);
-        log.info("MACD calculated for {} with latest signal: {}", cryptoPair, latestSignal);
+        log.debug("MACD calculated for {} with latest signal: {}", cryptoPair, latestSignal);
         walletOperationService.performOperations(latestSignalMap);
     }
 
