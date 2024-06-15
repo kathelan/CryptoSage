@@ -19,7 +19,7 @@ public class OrderBookService {
      */
     public OrderBookResponse getOrderBookResponseByTradingPair(String tradingPair) {
         OrderBookResponse orderBookResponse = orderBookClient.getOrderBookByTradingPair(tradingPair).block();
-        log.info("Sells and buys for coin: {} with obj: {}", tradingPair, orderBookResponse);
+        log.info("Sells and buys for coin: {}", tradingPair);
         return orderBookResponse;
     }
 }
