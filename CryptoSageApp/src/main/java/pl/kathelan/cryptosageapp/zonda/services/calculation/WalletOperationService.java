@@ -26,7 +26,6 @@ public class WalletOperationService {
     private final Set<CryptoPair> initializedPairs = new HashSet<>(); // Zbiór zainicjalizowanych par
     private final OrderBookService orderBookService;
 
-
     public void performOperations(Map<CryptoPair, Signal> signalMap) {
         initializeWallets();
         for (Map.Entry<CryptoPair, Signal> entry : signalMap.entrySet()) {
@@ -47,7 +46,7 @@ public class WalletOperationService {
                         log.warn("Unknown signal for {}: {}", cryptoPair, signal);
                 }
             } catch (Exception e) {
-                log.error("Error performing operation for {}: {}", cryptoPair, e.getMessage());
+                log.error("Error performing operation for {}: {}", cryptoPair, e.getMessage(), e);
             }
         }
     }
@@ -56,6 +55,7 @@ public class WalletOperationService {
         for (CryptoPair cryptoPair : CryptoPair.values()) {
             if (!initializedPairs.contains(cryptoPair)) {
                 walletAmounts.put(cryptoPair, 300.0); // Ustaw początkowe środki tylko raz
+                cryptoHoldings.put(cryptoPair, 0.0); // Inicjalizuj posiadania na 0
                 initializedPairs.add(cryptoPair); // Dodaj parę do zbioru zainicjalizowanych par
             }
         }
@@ -63,7 +63,7 @@ public class WalletOperationService {
 
     private synchronized void buyCrypto(CryptoPair cryptoPair) {
         log.info("Starting buying crypto for pair: {}", cryptoPair);
-        double walletAmount = walletAmounts.get(cryptoPair);
+        double walletAmount = walletAmounts.getOrDefault(cryptoPair, 0.0);
 
         if (walletAmount <= 0) {
             log.warn("No funds available to buy {}", cryptoPair);
@@ -79,7 +79,7 @@ public class WalletOperationService {
 
         if (walletAmount >= price * amountToBuy) {
             walletAmounts.put(cryptoPair, walletAmount - price * amountToBuy);
-            cryptoHoldings.put(cryptoPair, cryptoHoldings.getOrDefault(cryptoPair, 0.0) + amountToBuy);
+            cryptoHoldings.put(cryptoPair, cryptoHoldings.get(cryptoPair) + amountToBuy);
             log.info("Bought {} of {} at price {}. Remaining wallet amount: {}", amountToBuy, cryptoPair, price, walletAmounts.get(cryptoPair));
         } else {
             log.warn("Not enough funds to buy {}", cryptoPair);
@@ -100,13 +100,9 @@ public class WalletOperationService {
 
         log.info("walletAmount: {}, amountToSell: {} for cryptoPair: {}", walletAmounts.get(cryptoPair), amountToSell, cryptoPair);
 
-        if (amountToSell > 0) {
-            walletAmounts.put(cryptoPair, walletAmounts.get(cryptoPair) + price * amountToSell);
-            cryptoHoldings.put(cryptoPair, 0.0);
-            log.info("Sold {} of {} at price {}. Updated wallet amount: {}", amountToSell, cryptoPair, price, walletAmounts.get(cryptoPair));
-        } else {
-            log.warn("No holdings to sell for {}", cryptoPair);
-        }
+        walletAmounts.put(cryptoPair, walletAmounts.get(cryptoPair) + price * amountToSell);
+        cryptoHoldings.put(cryptoPair, 0.0);
+        log.info("Sold {} of {} at price {}. Updated wallet amount: {}", amountToSell, cryptoPair, price, walletAmounts.get(cryptoPair));
     }
 
     private Double getPrice(CryptoPair cryptoPair) {
