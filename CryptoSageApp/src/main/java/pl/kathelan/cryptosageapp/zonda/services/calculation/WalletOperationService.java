@@ -55,7 +55,7 @@ public class WalletOperationService {
     }
 
     private synchronized void buyCrypto(CryptoPair cryptoPair) {
-        log.info("Starting buying crypto for pair: {}", cryptoPair);
+        log.info("Starting buying crypto for pair: {}, current wallet value: {} and holdings: {}", cryptoPair, walletAmounts.get(cryptoPair), cryptoHoldings.get(cryptoPair));
         double walletAmount = walletAmounts.getOrDefault(cryptoPair, 0.0);
 
         if (walletAmount <= 0) {
@@ -71,12 +71,12 @@ public class WalletOperationService {
         log.info("walletAmount: {}, amountToBuy:{} for cryptoPair: {}", walletAmount, amountToBuy, cryptoPair);
 
         walletAmounts.put(cryptoPair, walletAmount - price * amountToBuy);
-        cryptoHoldings.put(cryptoPair, cryptoHoldings.get(cryptoPair) + amountToBuy);
+        cryptoHoldings.put(cryptoPair, cryptoHoldings.getOrDefault(cryptoPair, 0.0) + amountToBuy);
         log.info("Bought {} of {} at price {}. Remaining wallet amount: {}", amountToBuy, cryptoPair, price, walletAmounts.get(cryptoPair));
     }
 
     private synchronized void sellCrypto(CryptoPair cryptoPair) {
-        log.info("Starting selling crypto for pair: {}", cryptoPair);
+        log.info("Starting selling crypto for pair: {}, current wallet value: {} and holdings: {}", cryptoPair, walletAmounts.get(cryptoPair), cryptoHoldings.get(cryptoPair));
         double amountToSell = cryptoHoldings.getOrDefault(cryptoPair, 0.0);
 
         if (amountToSell <= 0) {
@@ -106,18 +106,29 @@ public class WalletOperationService {
 
     private double getCurrentPrice(CryptoPair cryptoPair) {
         OrderBookResponse orderBookResponse = getOrderBookResponseByTradingPair(cryptoPair.getValue());
-        if (orderBookResponse != null && "Ok".equals(orderBookResponse.getStatus()) && !orderBookResponse.getBuy().isEmpty() && !orderBookResponse.getSell().isEmpty()) {
-            double highestBid = orderBookResponse.getBuy().stream()
-                    .mapToDouble(buy -> Double.parseDouble(buy.getRa()))
-                    .max()
-                    .orElse(0.0);
-            double lowestAsk = orderBookResponse.getSell().stream()
-                    .mapToDouble(sell -> Double.parseDouble(sell.getRa()))
-                    .min()
-                    .orElse(0.0);
-            return (highestBid + lowestAsk) / 2; // Średnia z najwyższej oferty kupna i najniższej oferty sprzedaży
+        if (orderBookResponse == null) {
+            log.warn("No response for trading pair: {}", cryptoPair);
+            return 0.0;
         }
-        return 0.0;
+        if (!"Ok".equals(orderBookResponse.getStatus())) {
+            log.warn("Invalid status for order book response: {}", orderBookResponse.getStatus());
+            return 0.0;
+        }
+        if (orderBookResponse.getBuy().isEmpty() || orderBookResponse.getSell().isEmpty()) {
+            log.warn("Empty order book for trading pair: {}", cryptoPair);
+            return 0.0;
+        }
+
+        double highestBid = orderBookResponse.getBuy().stream()
+                .mapToDouble(buy -> Double.parseDouble(buy.getRa()))
+                .max()
+                .orElse(0.0);
+        double lowestAsk = orderBookResponse.getSell().stream()
+                .mapToDouble(sell -> Double.parseDouble(sell.getRa()))
+                .min()
+                .orElse(0.0);
+
+        return (highestBid + lowestAsk) / 2; // Średnia z najwyższej oferty kupna i najniższej oferty sprzedaży
     }
 
     private OrderBookResponse getOrderBookResponseByTradingPair(String tradingPair) {
