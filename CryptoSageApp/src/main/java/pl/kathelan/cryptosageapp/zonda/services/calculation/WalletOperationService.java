@@ -47,8 +47,11 @@ public class WalletOperationService {
     private void initializeWallets() {
         for (CryptoPair cryptoPair : CryptoPair.values()) {
             if (!initializedPairs.contains(cryptoPair)) {
+                log.info("Initialized wallet for {}", cryptoPair);
                 walletAmounts.put(cryptoPair, 300.0); // Ustaw początkowe środki tylko raz
+                log.info("created wallet for {} with value: {}", cryptoPair, walletAmounts.get(cryptoPair));
                 cryptoHoldings.put(cryptoPair, 0.0); // Inicjalizuj posiadania na 0
+                log.info("created holdings for {} with value: {}", cryptoPair, cryptoHoldings.get(cryptoPair));
                 initializedPairs.add(cryptoPair); // Dodaj parę do zbioru zainicjalizowanych par
             }
         }
