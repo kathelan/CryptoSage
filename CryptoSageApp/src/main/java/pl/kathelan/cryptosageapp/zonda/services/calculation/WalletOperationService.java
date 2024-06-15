@@ -33,17 +33,10 @@ public class WalletOperationService {
             Signal signal = entry.getValue();
             try {
                 switch (signal) {
-                    case BUY:
-                        buyCrypto(cryptoPair);
-                        break;
-                    case SELL:
-                        sellCrypto(cryptoPair);
-                        break;
-                    case HOLD:
-                        log.info("Holding position for {}", cryptoPair);
-                        break;
-                    default:
-                        log.warn("Unknown signal for {}: {}", cryptoPair, signal);
+                    case BUY -> buyCrypto(cryptoPair);
+                    case SELL -> sellCrypto(cryptoPair);
+                    case HOLD -> log.info("Holding position for {}", cryptoPair);
+                    default -> log.warn("Unknown signal for {}: {}", cryptoPair, signal);
                 }
             } catch (Exception e) {
                 log.error("Error performing operation for {}: {}", cryptoPair, e.getMessage(), e);
@@ -77,13 +70,9 @@ public class WalletOperationService {
 
         log.info("walletAmount: {}, amountToBuy:{} for cryptoPair: {}", walletAmount, amountToBuy, cryptoPair);
 
-        if (walletAmount >= price * amountToBuy) {
-            walletAmounts.put(cryptoPair, walletAmount - price * amountToBuy);
-            cryptoHoldings.put(cryptoPair, cryptoHoldings.get(cryptoPair) + amountToBuy);
-            log.info("Bought {} of {} at price {}. Remaining wallet amount: {}", amountToBuy, cryptoPair, price, walletAmounts.get(cryptoPair));
-        } else {
-            log.warn("Not enough funds to buy {}", cryptoPair);
-        }
+        walletAmounts.put(cryptoPair, walletAmount - price * amountToBuy);
+        cryptoHoldings.put(cryptoPair, cryptoHoldings.get(cryptoPair) + amountToBuy);
+        log.info("Bought {} of {} at price {}. Remaining wallet amount: {}", amountToBuy, cryptoPair, price, walletAmounts.get(cryptoPair));
     }
 
     private synchronized void sellCrypto(CryptoPair cryptoPair) {
