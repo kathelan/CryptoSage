@@ -1,4 +1,4 @@
-package pl.kathelan.cryptosageapp.zonda.services;
+package pl.kathelan.cryptosageapp.zonda.services.calculation;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import pl.kathelan.cryptosageapp.zonda.dtos.CryptoPair;
 import pl.kathelan.cryptosageapp.zonda.dtos.Signal;
 import pl.kathelan.cryptosageapp.zonda.dtos.candle.CandleHistoryResponse;
+import pl.kathelan.cryptosageapp.zonda.services.CandleDataService;
 
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -23,6 +24,7 @@ public class MACDService {
     private final Map<CryptoPair, List<Double>> closingPricesMap = new EnumMap<>(CryptoPair.class);
     @Getter
     private final Map<CryptoPair, Signal> latestSignalMap = new EnumMap<>(CryptoPair.class);
+    private final WalletOperationService walletOperationService;
 
     public void getHistoricalPrices(CryptoPair cryptoPair) {
         log.info("Started getting historical prices for : {}", cryptoPair);
@@ -64,6 +66,7 @@ public class MACDService {
         Signal latestSignal = generateSignal(macd, signalLine);
         latestSignalMap.put(cryptoPair, latestSignal);
         log.info("MACD calculated for {} with latest signal: {}", cryptoPair, latestSignal);
+        walletOperationService.performOperations(latestSignalMap);
     }
 
     private double[] calculateMACDValues (double[] prices) {

@@ -10,6 +10,7 @@ import pl.kathelan.cryptosageapp.zonda.dtos.CryptoPair;
 import pl.kathelan.cryptosageapp.zonda.dtos.candle.CandleData;
 import pl.kathelan.cryptosageapp.zonda.dtos.candle.CandleHistoryResponse;
 import pl.kathelan.cryptosageapp.zonda.dtos.candle.CandleItem;
+import pl.kathelan.cryptosageapp.zonda.services.calculation.MACDService;
 
 
 import java.util.ArrayList;
