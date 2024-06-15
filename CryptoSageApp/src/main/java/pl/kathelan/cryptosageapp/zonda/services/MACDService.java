@@ -43,7 +43,7 @@ public class MACDService {
     private void addDataToHistoryList(CandleHistoryResponse candleHistory) {
         candleHistory.getItems().forEach(item -> closingPrices.add(item.getData().getC()));
         log.info("Added {} new closing prices. Total: {}", candleHistory.getItems().size(), closingPrices.size());
-        if (closingPrices.size() < 3) {
+        if (closingPrices.size() < 26) {
             log.warn("Not enough data to process MACD. Current size: {}", closingPrices.size());
         } else {
             calculateMACD();

@@ -1,6 +1,12 @@
-zonda:
-  apiKey: ${ZONDA_API_KEY}
-
 server:
   servlet:
     context-path: /api
+
+logging:
+  file:
+    path: /home/mateusz/apps/app-logs/crypto-app
+    name: crypto-app.log
+  level:
+    pl.kathelan.cryptosageapp.zonda: INFO
+  pattern:
+    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
