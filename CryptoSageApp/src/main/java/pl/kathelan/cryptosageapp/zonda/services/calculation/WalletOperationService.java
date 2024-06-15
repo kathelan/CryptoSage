@@ -9,6 +9,8 @@ import pl.kathelan.cryptosageapp.zonda.dtos.Signal;
 import pl.kathelan.cryptosageapp.zonda.dtos.orderbook.OrderBookResponse;
 import pl.kathelan.cryptosageapp.zonda.services.OrderBookService;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.EnumMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -70,11 +72,12 @@ public class WalletOperationService {
         if (price == null) return;
 
         double amountToBuy = walletAmount / price;
+        amountToBuy = round(amountToBuy, 8);
 
         log.info("walletAmount: {}, amountToBuy:{} for cryptoPair: {}", walletAmount, amountToBuy, cryptoPair);
 
-        walletAmounts.put(cryptoPair, walletAmount - price * amountToBuy);
-        cryptoHoldings.put(cryptoPair, cryptoHoldings.getOrDefault(cryptoPair, 0.0) + amountToBuy);
+        walletAmounts.put(cryptoPair, round(walletAmount - price * amountToBuy, 8));
+        cryptoHoldings.put(cryptoPair, round(cryptoHoldings.getOrDefault(cryptoPair, 0.0) + amountToBuy, 8));
         log.info("Bought {} of {} at price {}. Remaining wallet amount: {}", amountToBuy, cryptoPair, price, walletAmounts.get(cryptoPair));
     }
 
@@ -87,12 +90,14 @@ public class WalletOperationService {
             return;
         }
 
+        amountToSell = round(amountToSell, 8);
+
         Double price = getPrice(cryptoPair);
         if (price == null) return;
 
         log.info("walletAmount: {}, amountToSell: {} for cryptoPair: {}", walletAmounts.get(cryptoPair), amountToSell, cryptoPair);
 
-        walletAmounts.put(cryptoPair, walletAmounts.get(cryptoPair) + price * amountToSell);
+        walletAmounts.put(cryptoPair, round(walletAmounts.get(cryptoPair) + price * amountToSell, 8));
         cryptoHoldings.put(cryptoPair, 0.0);
         log.info("Sold {} of {} at price {}. Updated wallet amount: {}", amountToSell, cryptoPair, price, walletAmounts.get(cryptoPair));
     }
@@ -136,5 +141,12 @@ public class WalletOperationService {
 
     private OrderBookResponse getOrderBookResponseByTradingPair(String tradingPair) {
         return orderBookService.getOrderBookResponseByTradingPair(tradingPair);
+    }
+
+    private double round(double value, int places) {
+        if (places < 0) throw new IllegalArgumentException();
+        BigDecimal bd = new BigDecimal(Double.toString(value));
+        bd = bd.setScale(places, RoundingMode.HALF_UP);
+        return bd.doubleValue();
     }
 }
