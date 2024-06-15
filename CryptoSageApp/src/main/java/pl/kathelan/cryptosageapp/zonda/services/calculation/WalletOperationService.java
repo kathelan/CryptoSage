@@ -1,5 +1,6 @@
 package pl.kathelan.cryptosageapp.zonda.services.calculation;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -9,22 +10,25 @@ import pl.kathelan.cryptosageapp.zonda.dtos.orderbook.OrderBookResponse;
 import pl.kathelan.cryptosageapp.zonda.services.OrderBookService;
 
 import java.util.EnumMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 @Service
 @Slf4j
 @RequiredArgsConstructor
 public class WalletOperationService {
 
+    @Getter
     private final Map<CryptoPair, Double> walletAmounts = new EnumMap<>(CryptoPair.class);
+    @Getter
     private final Map<CryptoPair, Double> cryptoHoldings = new EnumMap<>(CryptoPair.class);
+    private final Set<CryptoPair> initializedPairs = new HashSet<>(); // Zbiór zainicjalizowanych par
     private final OrderBookService orderBookService;
 
 
     public void performOperations(Map<CryptoPair, Signal> signalMap) {
-        for (CryptoPair cryptoPair : CryptoPair.values()) {
-            walletAmounts.putIfAbsent(cryptoPair, 300.0);
-        }
+        initializeWallets();
         for (Map.Entry<CryptoPair, Signal> entry : signalMap.entrySet()) {
             CryptoPair cryptoPair = entry.getKey();
             Signal signal = entry.getValue();
@@ -48,9 +52,27 @@ public class WalletOperationService {
         }
     }
 
-    private void buyCrypto(CryptoPair cryptoPair) {
-        double price = getCurrentPrice(cryptoPair);
+    private void initializeWallets() {
+        for (CryptoPair cryptoPair : CryptoPair.values()) {
+            if (!initializedPairs.contains(cryptoPair)) {
+                walletAmounts.put(cryptoPair, 300.0); // Ustaw początkowe środki tylko raz
+                initializedPairs.add(cryptoPair); // Dodaj parę do zbioru zainicjalizowanych par
+            }
+        }
+    }
+
+    private synchronized void buyCrypto(CryptoPair cryptoPair) {
+        log.info("Starting buying crypto for pair: {}", cryptoPair);
         double walletAmount = walletAmounts.get(cryptoPair);
+
+        if (walletAmount <= 0) {
+            log.warn("No funds available to buy {}", cryptoPair);
+            return;
+        }
+
+        Double price = getPrice(cryptoPair);
+        if (price == null) return;
+
         double amountToBuy = walletAmount / price;
 
         log.info("walletAmount: {}, amountToBuy:{} for cryptoPair: {}", walletAmount, amountToBuy, cryptoPair);
@@ -64,9 +86,17 @@ public class WalletOperationService {
         }
     }
 
-    private void sellCrypto(CryptoPair cryptoPair) {
-        double price = getCurrentPrice(cryptoPair);
+    private synchronized void sellCrypto(CryptoPair cryptoPair) {
+        log.info("Starting selling crypto for pair: {}", cryptoPair);
         double amountToSell = cryptoHoldings.getOrDefault(cryptoPair, 0.0);
+
+        if (amountToSell <= 0) {
+            log.warn("No holdings to sell for {}", cryptoPair);
+            return;
+        }
+
+        Double price = getPrice(cryptoPair);
+        if (price == null) return;
 
         log.info("walletAmount: {}, amountToSell: {} for cryptoPair: {}", walletAmounts.get(cryptoPair), amountToSell, cryptoPair);
 
@@ -77,6 +107,16 @@ public class WalletOperationService {
         } else {
             log.warn("No holdings to sell for {}", cryptoPair);
         }
+    }
+
+    private Double getPrice(CryptoPair cryptoPair) {
+        double price = getCurrentPrice(cryptoPair);
+
+        if (price <= 0) {
+            log.warn("Invalid price for {}: {}", cryptoPair, price);
+            return null;
+        }
+        return price;
     }
 
     private double getCurrentPrice(CryptoPair cryptoPair) {
