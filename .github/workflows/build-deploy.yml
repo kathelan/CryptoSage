@@ -19,7 +19,7 @@ jobs:
 
     # Budowanie obrazu Docker
     - name: Build the Docker image
-      run: docker build -t ${{ secrets.DOCKER_USERNAME }}/cryptosage:latest ./CryptoSageApp .
+      run: docker build -t ${{ secrets.DOCKER_USERNAME }}/cryptosage:latest ./CryptoSageApp
 
     # Wypchnięcie obrazu do Docker Hub
     - name: Push to Docker Hub
