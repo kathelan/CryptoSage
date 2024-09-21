@@ -1,5 +1,5 @@
 # Etap 1: Build - użycie obrazu z Gradle do zbudowania aplikacji
-FROM gradle:7.6-jdk21 AS builder
+FROM gradle:jdk21 AS builder
 
 # Ustaw katalog roboczy dla Gradle
 WORKDIR /app
