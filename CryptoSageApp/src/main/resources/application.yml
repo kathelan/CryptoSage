@@ -2,11 +2,28 @@ server:
   servlet:
     context-path: /api
 
+spring:
+  jpa:
+    defer-datasource-initialization: true
+    hibernate:
+      ddl-auto: update
+    database: h2
+  datasource:
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+    driver-class-name: org.h2.Driver
+  sql:
+    init:
+      mode: never
+      data-locations: classpath:db/create-crypto-pairs-1.sql
+      platform: h2
+
 logging:
   file:
     path: /home/mateusz/apps/app-logs/crypto-app
     name: crypto-app.log
   level:
-    pl.kathelan.cryptosageapp.zonda: INFO
+    pl.kathelan.cryptosageapp.zonda: DEBUG
   pattern:
     file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"

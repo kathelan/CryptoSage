@@ -19,6 +19,7 @@ import java.util.Set;
 @Service
 @Slf4j
 @RequiredArgsConstructor
+//TODO zrobic tabele dla portfeli
 public class WalletOperationService {
 
     @Getter
