@@ -4,8 +4,21 @@ FROM openjdk:21-jdk
 # Ustaw katalog roboczy
 WORKDIR /app
 
-# Kopiuj plik JAR do obrazu
-COPY build/libs/CryptoSageApp-0.0.1-SNAPSHOT.jar app.jar
+# Skopiuj pliki Gradle i źródła do obrazu
+COPY gradlew .
+COPY gradle ./gradle
+COPY build.gradle .
+COPY settings.gradle .
+COPY src ./src
+
+# Ustaw uprawnienia do wykonywania skryptu Gradle
+RUN chmod +x ./gradlew
+
+# Zbuduj projekt za pomocą Gradle
+RUN ./gradlew build --no-daemon
+
+# Skopiuj wygenerowany plik JAR do uruchomienia aplikacji
+RUN cp build/libs/CryptoSageApp-1.jar app.jar
 
 # Uruchom aplikację
 ENTRYPOINT ["java", "-jar", "app.jar"]
