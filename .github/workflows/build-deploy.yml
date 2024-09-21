@@ -1,0 +1,48 @@
+name: Docker Build and Deploy
+
+on:
+  push:
+    branches:
+      - main
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+
+    steps:
+    # Checkout repo
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    # Logowanie do Docker Hub
+    - name: Log in to Docker Hub
+      run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+
+    # Budowanie obrazu Docker
+    - name: Build the Docker image
+      run: docker build -t ${{ secrets.DOCKER_USERNAME }}/cryptosage:latest ./CryptoSageApp
+
+    # Wypchnięcie obrazu do Docker Hub
+    - name: Push to Docker Hub
+      run: docker push ${{ secrets.DOCKER_USERNAME }}/cryptosage:latest
+
+  deploy:
+    needs: build-and-push
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Deploy to VM via SSH
+      uses: appleboy/ssh-action@v0.1.5
+      with:
+        host: ${{ secrets.VM_HOST }}
+        username: ${{ secrets.VM_USER }}
+        password: ${{ secrets.VM_PASSWORD }}
+        port: 22
+        script: |
+          docker pull ${{ secrets.DOCKER_USERNAME }}/cryptosage:latest
+          docker stop cryptosage || true
+          docker rm cryptosage || true
+          docker run -d --restart always --name cryptosage \
+            -e DB_URL=${{ secrets.DB_URL }} \
+            -e DB_USERNAME=${{ secrets.DB_USERNAME }} \
+            -e DB_PASSWORD=${{ secrets.DB_PASSWORD }} \
+            -p 8080:8080 ${{ secrets.DOCKER_USERNAME }}/cryptosage:latest   
