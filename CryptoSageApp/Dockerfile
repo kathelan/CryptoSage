@@ -11,6 +11,9 @@ COPY build.gradle .
 COPY settings.gradle .
 COPY src ./src
 
+# Zainstaluj narzędzie xargs (znajduje się w pakiecie findutils)
+RUN apt-get update && apt-get install -y findutils
+
 # Ustaw uprawnienia do wykonywania skryptu Gradle
 RUN chmod +x ./gradlew
 
