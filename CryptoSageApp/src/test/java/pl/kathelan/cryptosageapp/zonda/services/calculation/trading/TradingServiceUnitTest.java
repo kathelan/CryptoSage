@@ -26,6 +26,9 @@ class TradingServiceUnitTest {
     private PriceService priceService;
 
     @Mock
+    private CryptoCalculationService cryptoCalculationService;
+
+    @Mock
     private HoldingService holdingService;
 
     @InjectMocks
@@ -45,6 +48,8 @@ class TradingServiceUnitTest {
         BigDecimal amountToUpdate = walletAmount.getAmount().subtract(price.multiply(amountToBuy)).setScale(8, RoundingMode.HALF_UP);
         WalletAmount walletAmountUpdated = new WalletAmount(amountToUpdate);
         when(walletAmountService.updateWalletAmount(amountToUpdate, walletAmount.getId())).thenReturn(walletAmountUpdated);
+        when(cryptoCalculationService.calculateAmountToBuy(any(), any())).thenReturn(amountToBuy);
+        when(cryptoCalculationService.calculateNewWalletAmount(any(), any(), any())).thenReturn(amountToUpdate);
 
         tradingService.buyCrypto(cryptoPair);
 
@@ -66,6 +71,7 @@ class TradingServiceUnitTest {
         when(walletAmountService.getWalletAmountByCryptoPair(cryptoPair)).thenReturn(walletAmountDb);
         when(holdingService.getHoldingByWalletAmount(walletAmountDb)).thenReturn(holdings);
         when(priceService.getPrice(cryptoPair)).thenReturn(price);
+        when(cryptoCalculationService.calculateAmountToSell(any(), any(), any())).thenReturn(expectedNewAmount);
 
         WalletAmount updatedWalletAmount = new WalletAmount(expectedNewAmount);
         when(walletAmountService.updateWalletAmount(expectedNewAmount, walletAmountDb.getId())).thenReturn(updatedWalletAmount);
