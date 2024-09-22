@@ -31,14 +31,18 @@ public class CryptoCurrencyPairService {
     }
 
     public void createCryptoCurrencyPair(CryptoPair currencyPair, List<Double> priceRecords) {
-        CryptoCurrencyPair pair = getCryptoCurrencyByPair(currencyPair);
+        CryptoCurrencyPair pair = findCryptoCurrencyByPair(currencyPair);
         Set<PriceRecord> newRecords = cryptoCurrencyMapper.mapPriceRecordsFromDouble(priceRecords, pair);
         pair.getPriceRecords().addAll(newRecords);
         CryptoCurrencyPair saved = pairRepository.save(pair);
         log.debug("Created new currency pair: {}", saved);
     }
 
-    private CryptoCurrencyPair getCryptoCurrencyByPair(CryptoPair cryptoPair) {
+    public CryptoCurrencyPair getCryptoCurrencyByPair(CryptoPair pair) {
+        return findCryptoCurrencyByPair(pair);
+    }
+
+    private CryptoCurrencyPair findCryptoCurrencyByPair(CryptoPair cryptoPair) {
         return pairRepository.findByCryptoPair(cryptoPair).orElseThrow(() -> new EntityNotFoundException("Pair not found"));
     }
 }

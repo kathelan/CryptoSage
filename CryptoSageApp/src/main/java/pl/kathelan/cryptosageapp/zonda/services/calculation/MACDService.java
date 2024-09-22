@@ -13,6 +13,7 @@ import pl.kathelan.cryptosageapp.zonda.model.CryptoCurrencyPair;
 import pl.kathelan.cryptosageapp.zonda.model.PriceRecord;
 import pl.kathelan.cryptosageapp.zonda.services.CandleDataService;
 import pl.kathelan.cryptosageapp.zonda.services.CryptoCurrencyPairService;
+import pl.kathelan.cryptosageapp.zonda.services.calculation.trading.WalletOperationService;
 
 import java.util.*;
 
@@ -75,7 +76,7 @@ public class MACDService {
 
     private void calculateMACD(CryptoPair cryptoPair, List<Double> closingPrices) {
         double[] pricesArray = closingPrices.stream().mapToDouble(Double::doubleValue).toArray();
-        double[] macd = calculateMACDValues (pricesArray);
+        double[] macd = calculateMACDValues(pricesArray);
         double[] signalLine = calculateSignalLine(macd);
         Signal latestSignal = generateSignal(macd, signalLine);
         latestSignalMap.put(cryptoPair, latestSignal);
@@ -83,7 +84,7 @@ public class MACDService {
         walletOperationService.performOperations(latestSignalMap);
     }
 
-    private double[] calculateMACDValues (double[] prices) {
+    private double[] calculateMACDValues(double[] prices) {
         double[] shortEMA = calculateEMA(prices, 12);
         double[] longEMA = calculateEMA(prices, 26);
         double[] macd = new double[prices.length];

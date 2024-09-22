@@ -3,7 +3,6 @@ package pl.kathelan.cryptosageapp.zonda.services;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import pl.kathelan.cryptosageapp.zonda.dtos.orderbook.OrderBookResponse;
 import pl.kathelan.cryptosageapp.zonda.dtos.trades.LastTradesResponse;
 import pl.kathelan.cryptosageapp.zonda.services.client.LastTradesClient;
 

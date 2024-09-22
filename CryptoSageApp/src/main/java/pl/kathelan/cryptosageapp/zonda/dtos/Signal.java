@@ -4,5 +4,6 @@ public enum Signal {
 
     BUY,
     SELL,
-    HOLD
+    HOLD,
+    UNKNOWN
 }
