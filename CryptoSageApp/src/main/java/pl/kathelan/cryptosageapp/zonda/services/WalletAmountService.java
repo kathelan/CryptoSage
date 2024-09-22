@@ -22,12 +22,13 @@ public class WalletAmountService {
     private final WalletAmountRepository walletAmountRepository;
     private final CryptoCurrencyPairService cryptoCurrencyPairService;
 
-    public void initWalletAmount(CryptoPair cryptoPair) {
+    public WalletAmount initWalletAmount(CryptoPair cryptoPair) {
         log.info("Initialized wallet for {}", cryptoPair);
         BigDecimal initAmount = new BigDecimal("300.0");
         CryptoCurrencyPair cryptoCurrencyPair = cryptoCurrencyPairService.getCryptoCurrencyByPair(cryptoPair);
-        createWalletAmount(cryptoCurrencyPair, initAmount);
+        WalletAmount walletAmount = createWalletAmount(cryptoCurrencyPair, initAmount);
         log.info("created wallet for {} with value: {}", cryptoPair, initAmount);
+        return walletAmount;
     }
 
     public Set<CryptoPair> getInitializedCryptoPairs() {

@@ -45,9 +45,9 @@ class WalletOperationServiceUnitTest {
 
         walletOperationService.performOperations(signalMap);
 
-        verify(walletInitializationService).initializeWallets(any());
-        verify(tradingService).buyCrypto(eq(CryptoPair.BTC_PLN), any());
-        verify(tradingService).sellCrypto(eq(CryptoPair.ETH_PLN), any());
+        verify(walletInitializationService).initializeWallets();
+        verify(tradingService).buyCrypto(eq(CryptoPair.BTC_PLN));
+        verify(tradingService).sellCrypto(eq(CryptoPair.ETH_PLN));
     }
 
     @Test
@@ -66,7 +66,7 @@ class WalletOperationServiceUnitTest {
         Signal buySignal = Signal.BUY;
         Map<CryptoPair, BigDecimal> originalHoldings = new HashMap<>(Map.of(cryptoPair, BigDecimal.valueOf(1000)));
 
-        doThrow(new RuntimeException("Failure during trading")).when(tradingService).buyCrypto(eq(cryptoPair), anyMap());
+        doThrow(new RuntimeException("Failure during trading")).when(tradingService).buyCrypto(eq(cryptoPair));
 
         try {
             walletOperationService.performOperations(Map.of(cryptoPair, buySignal));

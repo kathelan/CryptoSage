@@ -7,8 +7,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import pl.kathelan.cryptosageapp.zonda.dtos.CryptoPair;
+import pl.kathelan.cryptosageapp.zonda.services.HoldingService;
 import pl.kathelan.cryptosageapp.zonda.services.WalletAmountService;
-import pl.kathelan.cryptosageapp.zonda.services.calculation.trading.WalletOperationService;
 
 import java.math.BigDecimal;
 import java.util.Map;
@@ -19,8 +19,8 @@ import java.util.Map;
 @Slf4j
 public class WalletOperationController {
 
-    private final WalletOperationService walletOperationService;
     private final WalletAmountService walletAmountService;
+    private final HoldingService holdingService;
 
 
     @GetMapping
@@ -30,6 +30,6 @@ public class WalletOperationController {
 
     @GetMapping("/holdings")
     public ResponseEntity<Map<CryptoPair, BigDecimal>> getHoldings() {
-        return ResponseEntity.ok(walletOperationService.getCryptoHoldings());
+        return ResponseEntity.ok(holdingService.getHoldings());
     }
 }

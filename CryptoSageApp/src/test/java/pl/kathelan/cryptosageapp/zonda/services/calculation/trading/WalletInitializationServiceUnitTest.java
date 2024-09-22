@@ -9,6 +9,8 @@ import pl.kathelan.cryptosageapp.zonda.dtos.CryptoPair;
 import pl.kathelan.cryptosageapp.zonda.dtos.orderbook.Buy;
 import pl.kathelan.cryptosageapp.zonda.dtos.orderbook.OrderBookResponse;
 import pl.kathelan.cryptosageapp.zonda.dtos.orderbook.Sell;
+import pl.kathelan.cryptosageapp.zonda.model.WalletAmount;
+import pl.kathelan.cryptosageapp.zonda.services.HoldingService;
 import pl.kathelan.cryptosageapp.zonda.services.OrderBookService;
 import pl.kathelan.cryptosageapp.zonda.services.WalletAmountService;
 
@@ -26,6 +28,9 @@ class WalletInitializationServiceUnitTest {
     @Mock
     private WalletAmountService walletAmountService;
 
+    @Mock
+    private HoldingService holdingService;
+
     @InjectMocks
     private WalletInitializationService walletInitializationService;
 
@@ -33,22 +38,17 @@ class WalletInitializationServiceUnitTest {
     @Test
     void initializeWallets_initializesUninitializedCryptoPairs() {
         Set<CryptoPair> alreadyInitializedPairs = EnumSet.of(CryptoPair.BTC_PLN, CryptoPair.ETH_PLN, CryptoPair.SOL_PLN);
-        when(walletAmountService.getInitializedCryptoPairs()).thenReturn(alreadyInitializedPairs);
-
-        Map<CryptoPair, BigDecimal> holdings = new HashMap<>();
-
-        walletInitializationService.initializeWallets(holdings);
 
         for (CryptoPair cryptoPair : CryptoPair.values()) {
             if (!alreadyInitializedPairs.contains(cryptoPair)) {
-                assertEquals(BigDecimal.ZERO, holdings.get(cryptoPair), "Holdings should be initialized to zero for uninitiated crypto pairs.");
+                WalletAmount mockWalletAmount = new WalletAmount();
+                when(walletAmountService.initWalletAmount(cryptoPair)).thenReturn(mockWalletAmount);
+
+                walletInitializationService.initializeWallets();
+
                 verify(walletAmountService).initWalletAmount(cryptoPair);
+                verify(holdingService).initHoldingsAmount(mockWalletAmount, BigDecimal.ZERO);
             }
         }
-
-        for (CryptoPair cryptoPair : alreadyInitializedPairs) {
-            assertNull(holdings.get(cryptoPair), "Holdings for already initialized pairs should not be modified.");
-        }
     }
-
 }

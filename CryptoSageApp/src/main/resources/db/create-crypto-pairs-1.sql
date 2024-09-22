@@ -37,3 +37,38 @@ CREATE TABLE WALLET_AMMOUNT (
 CREATE INDEX idx_crypto_currency_pair_id
     ON WALLET_AMMOUNT(crypto_currency_pair_id);
 
+
+ALTER TABLE WALLET_AMMOUNT
+    ADD COLUMN updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
+
+ALTER TABLE CRYPTO_CURRENCY_PAIR
+    ADD COLUMN updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
+
+ALTER TABLE PRICE_RECORD
+    ADD COLUMN updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
+
+
+-- holding
+CREATE TABLE holding (
+                          id BIGINT AUTO_INCREMENT PRIMARY KEY,
+                          wallet_amount_id BIGINT NOT NULL,
+                          change_amount DECIMAL(18, 8) NOT NULL,
+                          created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                          updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                          FOREIGN KEY (wallet_amount_id) REFERENCES wallet_ammount(id)
+);
+
+CREATE TABLE transaction_history (
+                                     id BIGINT AUTO_INCREMENT PRIMARY KEY,
+                                     holding_id BIGINT NOT NULL,
+                                     transaction_type ENUM('buy', 'sell') NOT NULL,
+                                     quantity DECIMAL(18, 8) NOT NULL,
+                                     price_per_unit DECIMAL(18, 8) NOT NULL,
+                                     total_value DECIMAL(18, 8),
+                                     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                                     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                                     FOREIGN KEY (holding_id) REFERENCES holding(id)
+);
+
+CREATE INDEX idx_wallet_amount_id ON holding(wallet_amount_id);
+CREATE INDEX idx_holdings_id ON transaction_history(holding_id);

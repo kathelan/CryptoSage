@@ -6,7 +6,7 @@ spring:
   jpa:
     defer-datasource-initialization: true
     hibernate:
-      ddl-auto: update
+      ddl-auto: none
     database: h2
   datasource:
     url: ${DB_URL}
