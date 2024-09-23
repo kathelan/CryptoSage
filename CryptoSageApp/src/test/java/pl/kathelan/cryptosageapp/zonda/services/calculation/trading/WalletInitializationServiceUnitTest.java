@@ -6,19 +6,14 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import pl.kathelan.cryptosageapp.zonda.dtos.CryptoPair;
-import pl.kathelan.cryptosageapp.zonda.dtos.orderbook.Buy;
-import pl.kathelan.cryptosageapp.zonda.dtos.orderbook.OrderBookResponse;
-import pl.kathelan.cryptosageapp.zonda.dtos.orderbook.Sell;
 import pl.kathelan.cryptosageapp.zonda.model.WalletAmount;
 import pl.kathelan.cryptosageapp.zonda.services.HoldingService;
-import pl.kathelan.cryptosageapp.zonda.services.OrderBookService;
 import pl.kathelan.cryptosageapp.zonda.services.WalletAmountService;
 
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.EnumSet;
+import java.util.Set;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 

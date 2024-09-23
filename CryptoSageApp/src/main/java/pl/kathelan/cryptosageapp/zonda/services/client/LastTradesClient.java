@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import pl.kathelan.cryptosageapp.GenericWebClient;
-import pl.kathelan.cryptosageapp.zonda.dtos.orderbook.OrderBookResponse;
 import pl.kathelan.cryptosageapp.zonda.dtos.trades.LastTradesResponse;
 import reactor.core.publisher.Mono;
 

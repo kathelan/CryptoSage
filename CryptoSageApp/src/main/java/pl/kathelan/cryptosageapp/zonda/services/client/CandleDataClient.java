@@ -1,24 +1,16 @@
 package pl.kathelan.cryptosageapp.zonda.services.client;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
-import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.reactive.function.client.WebClient;
-import pl.kathelan.cryptosageapp.GenericWebClient;
 import pl.kathelan.cryptosageapp.zonda.dtos.candle.CandleHistoryResponse;
 import pl.kathelan.cryptosageapp.zonda.dtos.candle.CandleHistoryResponseDeserializer;
-import pl.kathelan.cryptosageapp.zonda.dtos.trades.LastTradesResponse;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
-
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -28,7 +20,6 @@ import java.util.Map;
 public class CandleDataClient {
 
     private static final String BASE_URL = "https://api.zondacrypto.exchange/rest/trading/candle/history/";
-    private final GenericWebClient webClient;
 
     public CandleHistoryResponse getHistory(String tradingPair, long from, long to, String resolution) {
         WebClient client = WebClient.builder().baseUrl(BASE_URL).build();

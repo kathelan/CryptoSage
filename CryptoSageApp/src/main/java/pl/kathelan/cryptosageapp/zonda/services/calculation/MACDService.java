@@ -31,7 +31,6 @@ public class MACDService {
     private final WalletOperationService walletOperationService;
     private final CryptoCurrencyMapper cryptoCurrencyMapper;
 
-    @Transactional
     public void getHistoricalPrices(CryptoPair cryptoPair) {
         log.debug("Started getting historical prices for : {}", cryptoPair);
         long startTime = System.currentTimeMillis();

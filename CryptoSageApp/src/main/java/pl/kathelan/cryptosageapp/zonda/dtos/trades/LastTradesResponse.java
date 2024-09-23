@@ -6,6 +6,6 @@ import java.util.ArrayList;
 
 @Data
 public class LastTradesResponse {
-    public String status;
-    public ArrayList<Item> items;
+    private String status;
+    private ArrayList<Item> items;
 }

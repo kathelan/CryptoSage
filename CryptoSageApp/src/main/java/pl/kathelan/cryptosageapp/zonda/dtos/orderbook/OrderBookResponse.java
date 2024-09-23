@@ -6,9 +6,9 @@ import java.util.ArrayList;
 
 @Data
 public class OrderBookResponse {
-    public String status;
-    public ArrayList<Sell> sell;
-    public ArrayList<Buy> buy;
-    public String timestamp;
-    public String seqNo;
+    private String status;
+    private ArrayList<Sell> sell;
+    private ArrayList<Buy> buy;
+    private String timestamp;
+    private String seqNo;
 }

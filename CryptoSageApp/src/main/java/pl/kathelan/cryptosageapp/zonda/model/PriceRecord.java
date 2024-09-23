@@ -1,7 +1,6 @@
 package pl.kathelan.cryptosageapp.zonda.model;
 
 import jakarta.persistence.*;
-import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 import pl.kathelan.cryptosageapp.common.model.CommonValues;
@@ -23,17 +22,29 @@ public class PriceRecord extends CommonValues {
     @JoinColumn(name = "crypto_currency_pair_id", nullable = false)
     private CryptoCurrencyPair cryptoCurrencyPair;
 
+    public PriceRecord(Double price, CryptoCurrencyPair cryptoCurrencyPair) {
+        this.price = price;
+        this.cryptoCurrencyPair = cryptoCurrencyPair;
+    }
+
+    public PriceRecord() {
+
+    }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        PriceRecord that = (PriceRecord) o;
-        return Objects.equals(id, that.id);
+        PriceRecord priceRecord = (PriceRecord) o;
+
+        if (id != null && priceRecord.id != null) {
+            return Objects.equals(id, priceRecord.id);
+        }
+        return Objects.equals(price, priceRecord.price);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id);
+        return id != null ? Objects.hash(id) : Objects.hash(price);
     }
 }

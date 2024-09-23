@@ -1,0 +1,16 @@
+
+server:
+  servlet:
+    context-path: /api
+
+spring:
+  jpa:
+    defer-datasource-initialization: true
+    hibernate:
+      ddl-auto: update
+    database: h2
+  datasource:
+    url: jdbc:h2:tcp://localhost:1521/default
+    username: user
+    password: password
+    driver-class-name: org.h2.Driver

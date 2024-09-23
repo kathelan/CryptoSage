@@ -21,7 +21,7 @@ public class CryptoCurrencyPairService {
     private final CryptoCurrencyMapper cryptoCurrencyMapper;
 
     public List<CryptoCurrencyPair> getCryptoCurrencyPair(CryptoPair currencyPair) {
-        return pairRepository.findAllByCryptoPair(currencyPair);
+        return pairRepository.findAllWithPriceRecordsByPair(currencyPair);
     }
 
     public List<PriceRecord> getPriceRecords(List<CryptoCurrencyPair> cryptoCurrencyPairs) {
@@ -30,7 +30,7 @@ public class CryptoCurrencyPairService {
                 .toList();
     }
 
-    public void createCryptoCurrencyPair(CryptoPair currencyPair, List<Double> priceRecords) {
+    public synchronized void createCryptoCurrencyPair(CryptoPair currencyPair, List<Double> priceRecords) {
         CryptoCurrencyPair pair = findCryptoCurrencyByPair(currencyPair);
         Set<PriceRecord> newRecords = cryptoCurrencyMapper.mapPriceRecordsFromDouble(priceRecords, pair);
         pair.getPriceRecords().addAll(newRecords);
@@ -43,6 +43,6 @@ public class CryptoCurrencyPairService {
     }
 
     private CryptoCurrencyPair findCryptoCurrencyByPair(CryptoPair cryptoPair) {
-        return pairRepository.findByCryptoPair(cryptoPair).orElseThrow(() -> new EntityNotFoundException("Pair not found"));
+        return pairRepository.findByCryptoPairWithPriceRecords(cryptoPair).orElseThrow(() -> new EntityNotFoundException("Pair not found"));
     }
 }

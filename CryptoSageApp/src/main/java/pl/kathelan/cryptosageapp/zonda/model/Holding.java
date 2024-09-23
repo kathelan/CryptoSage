@@ -9,20 +9,21 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
-@Setter
-@Getter
-@Entity(name = "holding")
-@Table(name = "HOLDING")
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
-public class Holding extends CommonValues {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @Setter
+    @Getter
+    @Entity(name = "holding")
+    @Table(name = "HOLDING")
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public class Holding extends CommonValues {
+        @Id
+        @GeneratedValue(strategy = GenerationType.IDENTITY)
+        private Long id;
 
-    @OneToMany(mappedBy = "holding", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    private Set<TransactionHistory> transactionHistories = new HashSet<>();
+        @Builder.Default
+        @OneToMany(mappedBy = "holding", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+        private Set<TransactionHistory> transactionHistories = new HashSet<>();
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "wallet_amount_id")

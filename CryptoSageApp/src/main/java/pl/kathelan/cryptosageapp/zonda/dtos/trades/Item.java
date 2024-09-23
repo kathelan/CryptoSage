@@ -4,9 +4,9 @@ import lombok.Data;
 
 @Data
 public class Item {
-    public String id;
-    public String t;
-    public String a;
-    public String r;
-    public String ty;
+    private String id;
+    private String t;
+    private String a;
+    private String r;
+    private String ty;
 }

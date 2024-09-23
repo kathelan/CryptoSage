@@ -14,7 +14,6 @@ import java.util.Set;
 @Entity(name = "cryptoCurrencyPair")
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 @Table(name = "CRYPTO_CURRENCY_PAIR")
 public class CryptoCurrencyPair extends CommonValues {
     @Id
@@ -27,6 +26,15 @@ public class CryptoCurrencyPair extends CommonValues {
     @OneToMany(mappedBy = "cryptoCurrencyPair", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private Set<PriceRecord> priceRecords = new HashSet<>();
 
+    public void add(PriceRecord priceRecord) {
+        if (priceRecord != null) {
+            if (priceRecords == null) {
+                priceRecords = new HashSet<>();
+            }
+            priceRecords.add(priceRecord);
+        }
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -38,5 +46,14 @@ public class CryptoCurrencyPair extends CommonValues {
     @Override
     public int hashCode() {
         return Objects.hash(id, cryptoPair);
+    }
+
+    @Override
+    public String toString() {
+        return "CryptoCurrencyPair{" +
+                "id=" + id +
+                ", cryptoPair=" + cryptoPair +
+                ", priceRecords=" + priceRecords +
+                '}';
     }
 }
