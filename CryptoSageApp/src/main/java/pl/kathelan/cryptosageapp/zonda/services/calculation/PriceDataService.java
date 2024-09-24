@@ -17,6 +17,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Service responsible for fetching and processing price data for cryptocurrency pairs.
+ */
 @Service
 @Slf4j
 @RequiredArgsConstructor
@@ -26,6 +29,13 @@ public class PriceDataService {
     private final CryptoCurrencyMapper cryptoCurrencyMapper;
 
 
+    /**
+     * Retrieves a list of closing prices for the given cryptocurrency pair.
+     *
+     * @param cryptoPair the cryptocurrency pair.
+     * @return list of closing prices.
+     * @throws DataRetrievalException if an error occurs while fetching data.
+     */
     public List<Double> getClosingPrices(CryptoPair cryptoPair) throws DataRetrievalException {
         log.debug("Starting fetching data for closing prices for: {}", cryptoPair);
 
@@ -49,6 +59,13 @@ public class PriceDataService {
 
     }
 
+    /**
+     * Fetches candle history data for the given cryptocurrency pair and time interval.
+     *
+     * @param cryptoPair   the cryptocurrency pair.
+     * @param timeInterval the time interval.
+     * @return the candle history response.
+     */
     private CandleHistoryResponse fetchCandleHistory(CryptoPair cryptoPair, TimeIntervalUtil.TimeInterval timeInterval) {
         return candleDataService.getHistory(
                 cryptoPair.getValue(),
@@ -58,18 +75,36 @@ public class PriceDataService {
         );
     }
 
+    /**
+     * Extracts existing closing prices from data stored in the database.
+     *
+     * @param cryptoCurrencyPairs list of cryptocurrency pair entities from the database.
+     * @return list of closing prices.
+     */
     private List<Double> extractClosingPrices(List<CryptoCurrencyPair> cryptoCurrencyPairs) {
         List<PriceRecord> priceRecords = cryptoCurrencyPairService.getExistingPriceRecords(cryptoCurrencyPairs);
         List<Double> closingPrices = cryptoCurrencyMapper.mapPriceRecordsToDouble(priceRecords);
         return new ArrayList<>(closingPrices);
     }
 
+    /**
+     * Extracts new closing prices from the API response.
+     *
+     * @param candleHistory the candle history response.
+     * @return list of new closing prices.
+     */
     private List<Double> extractNewClosingPrices(CandleHistoryResponse candleHistory) {
         return candleHistory.getItems().stream()
                 .map(item -> item.getData().getC())
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Saves new closing prices to the database.
+     *
+     * @param cryptoPair       the cryptocurrency pair.
+     * @param newClosingPrices list of new closing prices.
+     */
     private void saveNewClosingPrices(CryptoPair cryptoPair, List<Double> newClosingPrices) {
         cryptoCurrencyPairService.createCryptoCurrencyPair(cryptoPair, newClosingPrices);
     }

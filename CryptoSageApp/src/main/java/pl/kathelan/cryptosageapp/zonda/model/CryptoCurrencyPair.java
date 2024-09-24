@@ -53,7 +53,6 @@ public class CryptoCurrencyPair extends CommonValues {
         return "CryptoCurrencyPair{" +
                 "id=" + id +
                 ", cryptoPair=" + cryptoPair +
-                ", priceRecords=" + priceRecords +
                 '}';
     }
 }
