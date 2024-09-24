@@ -32,7 +32,7 @@ public class MACDService {
     private final CryptoCurrencyMapper cryptoCurrencyMapper;
 
     @Transactional
-    public void getHistoricalPrices(CryptoPair cryptoPair) {
+    public synchronized void getHistoricalPrices(CryptoPair cryptoPair) {
         log.debug("Started getting historical prices for : {}", cryptoPair);
         long startTime = System.currentTimeMillis();
         long pastTime = startTime - 300000;
