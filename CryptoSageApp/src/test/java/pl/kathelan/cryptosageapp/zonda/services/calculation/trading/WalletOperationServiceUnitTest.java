@@ -8,11 +8,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import pl.kathelan.cryptosageapp.zonda.dtos.CryptoPair;
 import pl.kathelan.cryptosageapp.zonda.dtos.Signal;
 
-import java.math.BigDecimal;
-import java.util.HashMap;
-import java.util.Map;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
@@ -28,45 +23,62 @@ class WalletOperationServiceUnitTest {
     @InjectMocks
     private WalletOperationService walletOperationService;
 
-
     @Test
-    void performOperations_initializesAndProcessesSignals() {
-        Map<CryptoPair, Signal> signalMap = Map.of(
-                CryptoPair.BTC_PLN, Signal.BUY,
-                CryptoPair.ETH_PLN, Signal.SELL,
-                CryptoPair.SOL_PLN, Signal.HOLD
-        );
+    void onSignalGenerated_initializesWalletsAndProcessesBuySignal() {
+        CryptoPair cryptoPair = CryptoPair.BTC_PLN;
+        Signal signal = Signal.BUY;
 
-        walletOperationService.performOperations(signalMap);
+        walletOperationService.onSignalGenerated(cryptoPair, signal);
 
         verify(walletInitializationService).initializeWallets();
-        verify(tradingService).buyCrypto(eq(CryptoPair.BTC_PLN));
-        verify(tradingService).sellCrypto(eq(CryptoPair.ETH_PLN));
-    }
-
-    @Test
-    void processSignal_handlesUnknownSignal() {
-        CryptoPair cryptoPair = CryptoPair.BTC_PLN;
-        Signal unknownSignal = Signal.UNKNOWN;
-
-        walletOperationService.performOperations(Map.of(cryptoPair, unknownSignal));
-
+        verify(tradingService).buyCrypto(eq(cryptoPair));
         verifyNoMoreInteractions(tradingService);
     }
 
     @Test
-    void processSignal_doesNotChangeStateOnError() {
+    void onSignalGenerated_initializesWalletsAndProcessesSellSignal() {
+        CryptoPair cryptoPair = CryptoPair.ETH_PLN;
+        Signal signal = Signal.SELL;
+
+        walletOperationService.onSignalGenerated(cryptoPair, signal);
+
+        verify(walletInitializationService).initializeWallets();
+        verify(tradingService).sellCrypto(eq(cryptoPair));
+        verifyNoMoreInteractions(tradingService);
+    }
+
+    @Test
+    void onSignalGenerated_initializesWalletsAndProcessesHoldSignal() {
+        CryptoPair cryptoPair = CryptoPair.SOL_PLN;
+        Signal signal = Signal.HOLD;
+
+        walletOperationService.onSignalGenerated(cryptoPair, signal);
+
+        verify(walletInitializationService).initializeWallets();
+        verifyNoInteractions(tradingService);
+    }
+
+    @Test
+    void onSignalGenerated_handlesUnknownSignal() {
         CryptoPair cryptoPair = CryptoPair.BTC_PLN;
-        Signal buySignal = Signal.BUY;
-        Map<CryptoPair, BigDecimal> originalHoldings = new HashMap<>(Map.of(cryptoPair, BigDecimal.valueOf(1000)));
+        Signal unknownSignal = Signal.UNKNOWN;
 
-        doThrow(new RuntimeException("Failure during trading")).when(tradingService).buyCrypto(eq(cryptoPair));
+        walletOperationService.onSignalGenerated(cryptoPair, unknownSignal);
 
-        try {
-            walletOperationService.performOperations(Map.of(cryptoPair, buySignal));
-        } catch (Exception ignored) {
-        }
+        verify(walletInitializationService).initializeWallets();
+        verifyNoInteractions(tradingService);
+    }
 
-        assertEquals(BigDecimal.valueOf(1000), originalHoldings.get(cryptoPair), "Holdings should remain unchanged after an error.");
+    @Test
+    void onSignalGenerated_catchesExceptionDuringTrading() {
+        CryptoPair cryptoPair = CryptoPair.BTC_PLN;
+        Signal signal = Signal.BUY;
+
+        doThrow(new RuntimeException("Trading error")).when(tradingService).buyCrypto(eq(cryptoPair));
+
+        walletOperationService.onSignalGenerated(cryptoPair, signal);
+
+        verify(walletInitializationService).initializeWallets();
+        verify(tradingService).buyCrypto(eq(cryptoPair));
     }
 }
