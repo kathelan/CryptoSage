@@ -12,6 +12,7 @@ import pl.kathelan.cryptosageapp.zonda.repositories.CryptoCurrencyPairRepository
 
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -20,14 +21,14 @@ public class CryptoCurrencyPairService {
     private final CryptoCurrencyPairRepository pairRepository;
     private final CryptoCurrencyMapper cryptoCurrencyMapper;
 
-    public List<CryptoCurrencyPair> getCryptoCurrencyPair(CryptoPair currencyPair) {
+    public List<CryptoCurrencyPair> getCryptoCurrencyPairWithRecords(CryptoPair currencyPair) {
         return pairRepository.findAllWithPriceRecordsByPair(currencyPair);
     }
 
-    public List<PriceRecord> getPriceRecords(List<CryptoCurrencyPair> cryptoCurrencyPairs) {
-        return cryptoCurrencyPairs.stream()
+    public List<PriceRecord> getExistingPriceRecords(List<CryptoCurrencyPair> pairs) {
+        return pairs.stream()
                 .flatMap(cryptoCurrencyPair -> cryptoCurrencyPair.getPriceRecords().stream())
-                .toList();
+                .collect(Collectors.toList());
     }
 
     public synchronized void createCryptoCurrencyPair(CryptoPair currencyPair, List<Double> priceRecords) {

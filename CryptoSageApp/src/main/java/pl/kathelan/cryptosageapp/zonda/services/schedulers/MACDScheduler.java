@@ -20,6 +20,6 @@ public class MACDScheduler {
 
     @Scheduled(fixedRate = 300000)
     void scheduleHistoricalPrices() {
-        Arrays.stream(CryptoPair.values()).forEach(macdService::getHistoricalPrices);
+        Arrays.stream(CryptoPair.values()).forEach(macdService::analyzeMarket);
     }
 }

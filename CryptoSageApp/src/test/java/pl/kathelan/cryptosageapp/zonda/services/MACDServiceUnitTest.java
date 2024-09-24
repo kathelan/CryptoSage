@@ -37,7 +37,7 @@ class MACDServiceTest {
     void shouldCalculateMACD() {
         Mockito.when(candleDataService.getHistory(anyString(), anyLong(), anyLong(), anyString())).thenReturn(createMockResponse());
 
-        macdService.getHistoricalPrices(CryptoPair.BTC_PLN);
+        macdService.analyzeMarket(CryptoPair.BTC_PLN);
 
         verify(candleDataService, times(1)).getHistory(anyString(), anyLong(), anyLong(), anyString());
 
