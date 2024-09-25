@@ -12,6 +12,7 @@ import pl.kathelan.cryptosageapp.zonda.model.CryptoCurrencyPair;
 import pl.kathelan.cryptosageapp.zonda.model.PriceRecord;
 import pl.kathelan.cryptosageapp.zonda.services.CandleDataService;
 import pl.kathelan.cryptosageapp.zonda.services.CryptoCurrencyPairService;
+import pl.kathelan.cryptosageapp.zonda.services.PriceRecordService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,6 +28,7 @@ public class PriceDataService {
     private final CandleDataService candleDataService;
     private final CryptoCurrencyPairService cryptoCurrencyPairService;
     private final CryptoCurrencyMapper cryptoCurrencyMapper;
+    private final PriceRecordService priceRecordService;
 
 
     /**
@@ -43,7 +45,8 @@ public class PriceDataService {
 
         try {
             boolean isExistingDataPresent = !existingData.isEmpty();
-            TimeIntervalUtil.TimeInterval timeInterval = TimeIntervalUtil.determineTimeInterval(isExistingDataPresent);
+            Long appStartTime = priceRecordService.getStartTime(cryptoPair);
+            TimeIntervalUtil.TimeInterval timeInterval = TimeIntervalUtil.determineTimeInterval(isExistingDataPresent, appStartTime);
             CandleHistoryResponse history = fetchCandleHistory(cryptoPair, timeInterval);
             List<Double> closingPrices = extractClosingPrices(existingData);
             List<Double> newClosingPrices = extractNewClosingPrices(history);

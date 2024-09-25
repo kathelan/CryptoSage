@@ -9,7 +9,7 @@ import java.util.Objects;
 
 @Setter
 @Getter
-@Entity(name = "priceRecord")
+@Entity(name = "PriceRecord")
 @Table(name = "PRICE_RECORD")
 public class PriceRecord extends CommonValues {
     @Id

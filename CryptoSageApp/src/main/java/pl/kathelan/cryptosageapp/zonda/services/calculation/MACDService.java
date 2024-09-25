@@ -40,7 +40,7 @@ public class MACDService {
      * @param cryptoPair the cryptocurrency pair to analyze.
      */
     @Transactional
-    public synchronized void analyzeMarket(CryptoPair cryptoPair) {
+    public void analyzeMarket(CryptoPair cryptoPair) {
         try {
             List<Double> closingPrices = priceDataService.getClosingPrices(cryptoPair);
             if (closingPrices.size() < 26) {

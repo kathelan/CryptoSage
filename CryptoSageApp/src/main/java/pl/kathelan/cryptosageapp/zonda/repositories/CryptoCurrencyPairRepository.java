@@ -31,6 +31,7 @@ public interface CryptoCurrencyPairRepository extends JpaRepository<CryptoCurren
                 select c from cryptoCurrencyPair c
                 join fetch c.priceRecords pr
                 where c.cryptoPair = :currencyPair
+                order by c.createdAt desc
                 """)
     List<CryptoCurrencyPair> findAllWithPriceRecordsByPair(CryptoPair currencyPair);
 
