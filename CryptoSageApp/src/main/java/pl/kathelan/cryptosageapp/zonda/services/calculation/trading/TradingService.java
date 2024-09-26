@@ -5,11 +5,16 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import pl.kathelan.cryptosageapp.zonda.dtos.CryptoPair;
 import pl.kathelan.cryptosageapp.zonda.model.Holding;
+import pl.kathelan.cryptosageapp.zonda.model.TransactionHistory;
 import pl.kathelan.cryptosageapp.zonda.model.WalletAmount;
 import pl.kathelan.cryptosageapp.zonda.services.HoldingService;
+import pl.kathelan.cryptosageapp.zonda.services.TransactionHistoryService;
 import pl.kathelan.cryptosageapp.zonda.services.WalletAmountService;
 
 import java.math.BigDecimal;
+
+import static pl.kathelan.cryptosageapp.zonda.model.TransactionType.BUY;
+import static pl.kathelan.cryptosageapp.zonda.model.TransactionType.SELL;
 
 @Service
 @RequiredArgsConstructor
@@ -19,6 +24,7 @@ public class TradingService {
     private final HoldingService holdingService;
     private final PriceService priceService;
     private final CryptoCalculationService calculationService;
+    private final TransactionHistoryService transactionHistoryService;
 
     public synchronized void buyCrypto(CryptoPair cryptoPair) {
         WalletAmount walletAmountDb = walletAmountService.getWalletAmountByCryptoPair(cryptoPair);
@@ -31,9 +37,10 @@ public class TradingService {
         BigDecimal amountToUpdate = calculationService.calculateNewWalletAmount(walletAmountDb.getAmount(), amountToBuy, price);
 
         WalletAmount updatedWalletAmount = walletAmountService.updateWalletAmount(amountToUpdate, walletAmountDb.getId());
-        holdingService.updateHolding(amountToBuy, holdingDb.getId());
+
+        TransactionHistory transactionHistory = transactionHistoryService.createHistoryTransaction(BUY, holdingDb, price, amountToBuy);
+        holdingService.updateHolding(amountToBuy, holdingDb.getId(), transactionHistory);
         logTransactionCompleted("Bought", cryptoPair, amountToBuy, price, updatedWalletAmount.getAmount());
-        //TODO dodac historie transakcji
     }
 
     public synchronized void sellCrypto(CryptoPair cryptoPair) {
@@ -45,8 +52,8 @@ public class TradingService {
 
         BigDecimal amountToUpdate = calculationService.calculateAmountToSell(walletAmountDb.getAmount(), price, holdingDb.getChangeAmount());
         WalletAmount updated = walletAmountService.updateWalletAmount(amountToUpdate, walletAmountDb.getId());
-        holdingService.updateHolding(BigDecimal.ZERO, holdingDb.getId());
-        //TODO dodac historie transakcji
+        TransactionHistory transactionHistory = transactionHistoryService.createHistoryTransaction(SELL, holdingDb, price, holdingDb.getChangeAmount());
+        holdingService.updateHolding(BigDecimal.ZERO, holdingDb.getId(), transactionHistory);
         logTransactionCompleted("Sold", cryptoPair, holdingDb.getChangeAmount(), price, updated.getAmount());
     }
 

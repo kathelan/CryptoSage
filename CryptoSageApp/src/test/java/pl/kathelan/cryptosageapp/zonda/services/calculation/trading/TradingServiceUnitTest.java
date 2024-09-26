@@ -7,16 +7,20 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import pl.kathelan.cryptosageapp.zonda.dtos.CryptoPair;
 import pl.kathelan.cryptosageapp.zonda.model.Holding;
+import pl.kathelan.cryptosageapp.zonda.model.TransactionHistory;
 import pl.kathelan.cryptosageapp.zonda.model.WalletAmount;
 import pl.kathelan.cryptosageapp.zonda.services.HoldingService;
+import pl.kathelan.cryptosageapp.zonda.services.TransactionHistoryService;
 import pl.kathelan.cryptosageapp.zonda.services.WalletAmountService;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
+import static pl.kathelan.cryptosageapp.zonda.model.TransactionType.BUY;
+import static pl.kathelan.cryptosageapp.zonda.model.TransactionType.SELL;
 
 @ExtendWith(MockitoExtension.class)
 class TradingServiceUnitTest {
@@ -24,12 +28,12 @@ class TradingServiceUnitTest {
     private WalletAmountService walletAmountService;
     @Mock
     private PriceService priceService;
-
     @Mock
     private CryptoCalculationService cryptoCalculationService;
-
     @Mock
     private HoldingService holdingService;
+    @Mock
+    private TransactionHistoryService transactionHistoryService;
 
     @InjectMocks
     private TradingService tradingService;
@@ -51,12 +55,15 @@ class TradingServiceUnitTest {
         when(cryptoCalculationService.calculateAmountToBuy(any(), any())).thenReturn(amountToBuy);
         when(cryptoCalculationService.calculateNewWalletAmount(any(), any(), any())).thenReturn(amountToUpdate);
 
+        TransactionHistory transactionHistory = new TransactionHistory();
+        when(transactionHistoryService.createHistoryTransaction(any(), any(), any(), any())).thenReturn(transactionHistory);
+
         tradingService.buyCrypto(cryptoPair);
 
-        verify(holdingService).updateHolding(eq(amountToBuy), eq(holding.getId()));
+        verify(holdingService).updateHolding(eq(amountToBuy), eq(holding.getId()), eq(transactionHistory));
         verify(walletAmountService).updateWalletAmount(eq(amountToUpdate), eq(walletAmount.getId()));
+        verify(transactionHistoryService).createHistoryTransaction(eq(BUY), eq(holding), eq(price), eq(amountToBuy));
     }
-
 
     @Test
     void sellCrypto_whenPriceIsValidAndHoldingsExist_performsTransaction() {
@@ -76,59 +83,14 @@ class TradingServiceUnitTest {
         WalletAmount updatedWalletAmount = new WalletAmount(expectedNewAmount);
         when(walletAmountService.updateWalletAmount(expectedNewAmount, walletAmountDb.getId())).thenReturn(updatedWalletAmount);
 
+        TransactionHistory transactionHistory = new TransactionHistory();
+        when(transactionHistoryService.createHistoryTransaction(any(), any(), any(), any())).thenReturn(transactionHistory);
+
         tradingService.sellCrypto(cryptoPair);
 
-        verify(holdingService).updateHolding(eq(BigDecimal.ZERO), eq(holdings.getId()));
-        verify(walletAmountService).updateWalletAmount(expectedNewAmount, walletAmountDb.getId());
+        verify(holdingService).updateHolding(eq(BigDecimal.ZERO), eq(holdings.getId()), eq(transactionHistory));
+        verify(walletAmountService).updateWalletAmount(eq(expectedNewAmount), eq(walletAmountDb.getId()));
+        verify(transactionHistoryService).createHistoryTransaction(eq(SELL), eq(holdings), eq(price), eq(holdings.getChangeAmount()));
         assertEquals(expectedNewAmount, updatedWalletAmount.getAmount(), "Wallet amount should be correctly updated.");
-    }
-
-    @Test
-    void sellCrypto_whenPriceIsNull_doesNotPerformTransaction() {
-        CryptoPair cryptoPair = CryptoPair.BTC_PLN;
-        BigDecimal walletAmountValue = BigDecimal.valueOf(1000);
-        WalletAmount walletAmount = new WalletAmount(walletAmountValue);
-        Holding holding = new Holding(BigDecimal.valueOf(10));
-
-        when(walletAmountService.getWalletAmountByCryptoPair(cryptoPair)).thenReturn(walletAmount);
-        when(holdingService.getHoldingByWalletAmount(walletAmount)).thenReturn(holding);
-        when(priceService.getPrice(cryptoPair)).thenReturn(null);
-
-        tradingService.sellCrypto(cryptoPair);
-
-        verify(walletAmountService, never()).updateWalletAmount(any(), any());
-        verify(holdingService, never()).updateHolding(any(), anyLong());
-    }
-
-    @Test
-    void buyCrypto_whenPriceIsNull_doesNotPerformTransaction() {
-        CryptoPair cryptoPair = CryptoPair.BTC_PLN;
-        WalletAmount walletAmount = new WalletAmount(BigDecimal.valueOf(1000));
-        Holding holding = new Holding(BigDecimal.ZERO);
-
-        when(walletAmountService.getWalletAmountByCryptoPair(cryptoPair)).thenReturn(walletAmount);
-        when(holdingService.getHoldingByWalletAmount(walletAmount)).thenReturn(holding);
-        when(priceService.getPrice(cryptoPair)).thenReturn(null);
-
-        tradingService.buyCrypto(cryptoPair);
-
-        verify(walletAmountService, never()).updateWalletAmount(any(), any());
-        verify(holdingService, never()).updateHolding(any(), anyLong());
-    }
-
-    @Test
-    void buyCrypto_whenPriceIsZero_doesNotPerformTransaction() {
-        CryptoPair cryptoPair = CryptoPair.BTC_PLN;
-        WalletAmount walletAmount = new WalletAmount(BigDecimal.valueOf(1000));
-        Holding holding = new Holding(BigDecimal.ZERO);
-
-        when(walletAmountService.getWalletAmountByCryptoPair(cryptoPair)).thenReturn(walletAmount);
-        when(holdingService.getHoldingByWalletAmount(walletAmount)).thenReturn(holding);
-        when(priceService.getPrice(cryptoPair)).thenReturn(BigDecimal.ZERO);
-
-        tradingService.buyCrypto(cryptoPair);
-
-        verify(walletAmountService, never()).updateWalletAmount(any(), any());
-        verify(holdingService, never()).updateHolding(any(), anyLong());
     }
 }

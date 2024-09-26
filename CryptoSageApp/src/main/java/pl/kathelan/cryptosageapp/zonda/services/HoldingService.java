@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import pl.kathelan.cryptosageapp.zonda.dtos.CryptoPair;
 import pl.kathelan.cryptosageapp.zonda.model.Holding;
+import pl.kathelan.cryptosageapp.zonda.model.TransactionHistory;
 import pl.kathelan.cryptosageapp.zonda.model.WalletAmount;
 import pl.kathelan.cryptosageapp.zonda.repositories.HoldingRepository;
 
@@ -39,11 +40,13 @@ public class HoldingService {
         return getByWalletAmount(walletAmountDb);
     }
 
-    public void updateHolding(BigDecimal amountToUpdate, Long holdingId) {
-        Holding holding = holdingRepository.findById(holdingId).orElseThrow(() -> new EntityNotFoundException("Holding now found with id: " + holdingId));
+    public void updateHolding(BigDecimal amountToUpdate, Long holdingId, TransactionHistory transactionHistory) {
+        Holding holding = holdingRepository.findByIdWithTransactions(holdingId).orElseThrow(() -> new EntityNotFoundException("Holding now found with id: " + holdingId));
         holding.setChangeAmount(holding.getChangeAmount().add(amountToUpdate));
+        holding.getTransactionHistories().add(transactionHistory);
         Holding updated = holdingRepository.save(holding);
         log.info("Updated holding for pair: {}, amount: {}", updated.getWalletAmount().getCryptoCurrencyPair(), updated.getChangeAmount());
+        log.info("Saved Transaction for type: {}, amount: {}, pricePerUnit: {}", transactionHistory.getTransactionType(), transactionHistory.getQuantity(), transactionHistory.getPricePerUnit());
     }
 
     public Map<CryptoPair, BigDecimal> getHoldings() {
