@@ -29,8 +29,9 @@ public class TradingService {
     public synchronized void buyCrypto(CryptoPair cryptoPair) {
         WalletAmount walletAmountDb = walletAmountService.getWalletAmountByCryptoPair(cryptoPair);
         Holding holdingDb = holdingService.getHoldingByWalletAmount(walletAmountDb);
+
         logBuyingStart(cryptoPair, walletAmountDb, holdingDb);
-        BigDecimal price = validatePrice(cryptoPair, false, null);
+        BigDecimal price = validatePrice(cryptoPair, true, walletAmountDb.getAmount());
         if (price == null) return;
 
         BigDecimal amountToBuy = calculationService.calculateAmountToBuy(walletAmountDb.getAmount(), price);
