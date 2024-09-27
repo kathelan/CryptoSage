@@ -15,7 +15,7 @@ public interface HoldingRepository extends CrudRepository<Holding, Long> {
 
     @Query(value = """
             select h from holding h
-            join fetch h.transactionHistories
+            left join fetch h.transactionHistories
             where h.id = :holdingId
             """)
     Optional<Holding> findByIdWithTransactions(Long holdingId);
