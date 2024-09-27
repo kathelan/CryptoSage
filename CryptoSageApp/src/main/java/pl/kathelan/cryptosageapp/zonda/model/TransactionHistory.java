@@ -21,7 +21,7 @@ public class TransactionHistory extends CommonValues {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "holdings_id")
+    @JoinColumn(name = "holding_id")
     private Holding holding;
 
     @Enumerated(EnumType.STRING)
