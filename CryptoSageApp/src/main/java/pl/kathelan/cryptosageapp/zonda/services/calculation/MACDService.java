@@ -24,8 +24,8 @@ public class MACDService {
     /**
      * Constructor for MACDService.
      *
-     * @param macdCalculator       instance of MACDCalculator.
-     * @param priceDataService     service for fetching price data.
+     * @param macdCalculator         instance of MACDCalculator.
+     * @param priceDataService       service for fetching price data.
      * @param walletOperationService service for handling wallet operations (added as a signal listener).
      */
     public MACDService(MACDCalculator macdCalculator, PriceDataService priceDataService, WalletOperationService walletOperationService) {
@@ -41,15 +41,11 @@ public class MACDService {
      */
     @Transactional
     public void analyzeMarket(CryptoPair cryptoPair) {
-        try {
-            List<Double> closingPrices = priceDataService.getClosingPrices(cryptoPair);
-            if (closingPrices.size() < 26) {
-                log.debug("Not enough data to process MACD for {}. Current size: {}", cryptoPair, closingPrices.size());
-            } else {
-                calculateMACD(cryptoPair, closingPrices);
-            }
-        } catch (DataRetrievalException e) {
-            log.error("Error retrieving data for {}: {}", cryptoPair, e.getMessage());
+        List<Double> closingPrices = priceDataService.getClosingPrices(cryptoPair);
+        if (closingPrices.size() < 26) {
+            log.debug("Not enough data to process MACD for {}. Current size: {}", cryptoPair, closingPrices.size());
+        } else {
+            calculateMACD(cryptoPair, closingPrices);
         }
     }
 

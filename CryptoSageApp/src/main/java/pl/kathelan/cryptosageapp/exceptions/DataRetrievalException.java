@@ -1,6 +1,6 @@
 package pl.kathelan.cryptosageapp.exceptions;
 
-public class DataRetrievalException extends Exception {
+public class DataRetrievalException extends RuntimeException {
     public DataRetrievalException() {
         super();
     }

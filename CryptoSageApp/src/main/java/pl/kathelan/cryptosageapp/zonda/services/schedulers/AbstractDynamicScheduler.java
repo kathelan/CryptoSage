@@ -1,6 +1,7 @@
 package pl.kathelan.cryptosageapp.zonda.services.schedulers;
 
 import jakarta.annotation.PostConstruct;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Component;
 
@@ -12,6 +13,8 @@ public abstract class AbstractDynamicScheduler {
     private final TaskScheduler taskScheduler;
     private ScheduledFuture<?> scheduledFuture;
     private Duration currentInterval;
+    @Value("${scheduler.enabled}")
+    private boolean schedulerEnabled;
 
     protected AbstractDynamicScheduler(TaskScheduler taskScheduler) {
         this.taskScheduler = taskScheduler;
@@ -19,7 +22,9 @@ public abstract class AbstractDynamicScheduler {
 
     @PostConstruct
     public void init() {
-        scheduleTask();
+        if (schedulerEnabled) {
+            scheduleTask();
+        }
     }
 
     protected void scheduleTask() {

@@ -31,7 +31,7 @@ public class TradingService {
         Holding holdingDb = holdingService.getHoldingByWalletAmount(walletAmountDb);
 
         logBuyingStart(cryptoPair, walletAmountDb, holdingDb);
-        BigDecimal price = validatePrice(cryptoPair, true, walletAmountDb.getAmount());
+        BigDecimal price = validatePrice(cryptoPair, false, walletAmountDb.getAmount());
         if (price == null) return;
 
         BigDecimal amountToBuy = calculationService.calculateAmountToBuy(walletAmountDb.getAmount(), price);
@@ -60,15 +60,11 @@ public class TradingService {
 
     private BigDecimal validatePrice(CryptoPair cryptoPair, boolean isSelling, BigDecimal holdingsAmount) {
         BigDecimal price = priceService.getPrice(cryptoPair);
-        boolean priceValid = (price != null && price.compareTo(BigDecimal.ZERO) > 0);
-
-        if (isSelling) {
-            priceValid = priceValid && (holdingsAmount.compareTo(BigDecimal.ZERO) > 0);
-        }
+        boolean priceValid = (price != null && price.compareTo(BigDecimal.ZERO) > 0 && holdingsAmount.compareTo(BigDecimal.ZERO) > 0);
 
         if (!priceValid) {
             String action = isSelling ? "sell" : "buy";
-            logPriceValidationFail(action, holdingsAmount, cryptoPair);
+            logPriceValidationFail(action, cryptoPair);
             return null;
         }
         return price;
@@ -86,8 +82,8 @@ public class TradingService {
         log.info("{} {} of {} at price {}. Remaining wallet amount: {}", action, amount, cryptoPair, price, remainingAmount);
     }
 
-    private void logPriceValidationFail(String action, BigDecimal holdingsAmount, CryptoPair cryptoPair) {
-        log.warn("No {} or invalid price to {} for {}", holdingsAmount, action, cryptoPair);
+    private void logPriceValidationFail(String action, CryptoPair cryptoPair) {
+        log.warn("No wallet/holding amount or invalid price to {} for {}", action, cryptoPair);
     }
 
 
