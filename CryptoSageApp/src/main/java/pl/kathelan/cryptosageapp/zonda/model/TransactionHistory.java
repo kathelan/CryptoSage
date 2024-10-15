@@ -32,7 +32,6 @@ public class TransactionHistory extends CommonValues {
 
     private BigDecimal pricePerUnit;
 
-    @Formula("quantity * price_per_unit")
     private BigDecimal totalValue;
 
 

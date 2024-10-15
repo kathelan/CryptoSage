@@ -4,6 +4,7 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import pl.kathelan.cryptosageapp.zonda.dtos.CryptoPair;
 import pl.kathelan.cryptosageapp.zonda.model.Holding;
 import pl.kathelan.cryptosageapp.zonda.model.TransactionHistory;
@@ -40,6 +41,7 @@ public class HoldingService {
         return getByWalletAmount(walletAmountDb);
     }
 
+    @Transactional
     public void updateHolding(BigDecimal amountToUpdate, Long holdingId, TransactionHistory transactionHistory) {
         Holding holding = holdingRepository.findByIdWithTransactions(holdingId).orElseThrow(() -> new EntityNotFoundException("Holding now found with id: " + holdingId));
         holding.setChangeAmount(holding.getChangeAmount().add(amountToUpdate));

@@ -18,6 +18,7 @@ public class TransactionHistoryService {
                 .holding(holding)
                 .pricePerUnit(pricePerUnit)
                 .quantity(quantity)
+                .totalValue(pricePerUnit.multiply(quantity))
                 .build();
     }
 }
