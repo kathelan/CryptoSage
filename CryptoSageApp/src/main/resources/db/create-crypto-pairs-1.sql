@@ -72,3 +72,15 @@ CREATE TABLE transaction_history (
 
 CREATE INDEX idx_wallet_amount_id ON holding(wallet_amount_id);
 CREATE INDEX idx_holdings_id ON transaction_history(holding_id);
+
+CREATE TABLE IF NOT EXISTS PRICE_RECORD_DAILY (
+                                            id BIGINT AUTO_INCREMENT PRIMARY KEY,
+                                            crypto_currency_pair_id BIGINT,
+                                            avg_price DECIMAL(18, 8) NOT NULL,
+                                            date DATE NOT NULL,
+                                            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                                            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                                            FOREIGN KEY (crypto_currency_pair_id) REFERENCES crypto_currency_pair(id)
+    );
+
+

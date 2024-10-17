@@ -9,4 +9,5 @@ public class TimeConstants {
     public static final Duration FIVE_MINUTES = Duration.ofMinutes(5);
     public static final Duration ONE_HOUR = Duration.ofHours(1);
     public static final long ONE_WEEK = Duration.ofDays(7).toMillis();
+    public static final Duration ONE_DAY = Duration.ofDays(1);
 }

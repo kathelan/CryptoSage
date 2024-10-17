@@ -43,6 +43,10 @@ public class CryptoCurrencyPairService {
         return findCryptoCurrencyByPair(pair);
     }
 
+    public List<CryptoCurrencyPair> getCryptoPairs() {
+        return pairRepository.findAll();
+    }
+
     private CryptoCurrencyPair findCryptoCurrencyByPair(CryptoPair cryptoPair) {
         return pairRepository.findByCryptoPairWithPriceRecords(cryptoPair).orElseThrow(() -> new EntityNotFoundException("Pair not found"));
     }
