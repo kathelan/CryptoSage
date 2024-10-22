@@ -13,6 +13,7 @@ import pl.kathelan.cryptosageapp.zonda.repositories.HoldingRepository;
 
 import java.math.BigDecimal;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -44,11 +45,17 @@ public class HoldingService {
     @Transactional
     public void updateHolding(BigDecimal amountToUpdate, Long holdingId, TransactionHistory transactionHistory) {
         Holding holding = holdingRepository.findByIdWithTransactions(holdingId).orElseThrow(() -> new EntityNotFoundException("Holding now found with id: " + holdingId));
-        holding.setChangeAmount(holding.getChangeAmount().add(amountToUpdate));
+        if (amountToUpdate.equals(BigDecimal.ZERO)) {
+            holding.setChangeAmount(BigDecimal.ZERO);
+        } else {
+            holding.setChangeAmount(holding.getChangeAmount().add(amountToUpdate));
+        }
         holding.getTransactionHistories().add(transactionHistory);
         Holding updated = holdingRepository.save(holding);
         log.info("Updated holding for pair: {}, amount: {}", updated.getWalletAmount().getCryptoCurrencyPair(), updated.getChangeAmount());
-        log.info("Saved Transaction for type: {}, amount: {}, pricePerUnit: {}", transactionHistory.getTransactionType(), transactionHistory.getQuantity(), transactionHistory.getPricePerUnit());
+        if (transactionHistory != null) {
+            log.info("Saved Transaction for type: {}, amount: {}, pricePerUnit: {}", transactionHistory.getTransactionType(), transactionHistory.getQuantity(), transactionHistory.getPricePerUnit());
+        }
     }
 
     public Map<CryptoPair, BigDecimal> getHoldings() {
