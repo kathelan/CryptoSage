@@ -61,7 +61,7 @@ CREATE TABLE holding (
 CREATE TABLE transaction_history (
                                      id BIGINT AUTO_INCREMENT PRIMARY KEY,
                                      holding_id BIGINT NOT NULL,
-                                     transaction_type ENUM('buy', 'sell') NOT NULL,
+                                     transaction_type ENUM('BUY', 'SELL') NOT NULL,
                                      quantity DECIMAL(18, 8) NOT NULL,
                                      price_per_unit DECIMAL(18, 8) NOT NULL,
                                      total_value DECIMAL(18, 8),
