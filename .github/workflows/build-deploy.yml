@@ -29,8 +29,14 @@ jobs:
           username: ${{ secrets.VM_USER }}
           password: ${{ secrets.VM_PASSWORD }}
           port: 22
-          script: >
+          script: |
+            set -e
             docker pull ${{ secrets.DOCKER_USERNAME }}/cryptosage:latest
             docker stop cryptosage || true
             docker rm cryptosage || true
-            docker run -d --restart always --name cryptosage -e DB_URL=${{ secrets.DB_URL }} -e DB_USERNAME=${{ secrets.DB_USERNAME }} -e DB_PASSWORD=${{ secrets.DB_PASSWORD }} -e SMTP_PW=${{ secrets.SMTP_PW }} -p 8080:8080 ${{ secrets.DOCKER_USERNAME }}/cryptosage:latest
+            docker run -d --restart always --name cryptosage \
+              -e DB_URL=${{ secrets.DB_URL }} \
+              -e DB_USERNAME=${{ secrets.DB_USERNAME }} \
+              -e DB_PASSWORD=${{ secrets.DB_PASSWORD }} \
+              -e SMTP_PW=${{ secrets.SMTP_PW }} \
+              -p 8080:8080 ${{ secrets.DOCKER_USERNAME }}/cryptosage:latest
