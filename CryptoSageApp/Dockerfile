@@ -6,6 +6,8 @@ WORKDIR /app
 
 # Skopiuj pliki Gradle i źródła do kontenera
 COPY build.gradle settings.gradle ./
+COPY commons ./commons
+COPY notification-module ./notification-module
 COPY src ./src
 
 # Zbuduj aplikację za pomocą Gradle
