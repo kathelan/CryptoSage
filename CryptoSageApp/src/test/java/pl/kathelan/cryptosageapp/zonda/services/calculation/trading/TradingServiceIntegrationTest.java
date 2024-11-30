@@ -5,6 +5,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.FilterType;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,6 +18,7 @@ import pl.kathelan.cryptosageapp.zonda.repositories.WalletAmountRepository;
 import pl.kathelan.cryptosageapp.zonda.services.HoldingService;
 import pl.kathelan.cryptosageapp.zonda.services.TransactionHistoryService;
 import pl.kathelan.cryptosageapp.zonda.services.WalletAmountService;
+import pl.kathelan.notificationmodule.EmailNotificationChannel;
 
 import java.math.BigDecimal;
 import java.util.Optional;

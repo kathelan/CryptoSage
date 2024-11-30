@@ -6,7 +6,13 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
 @EnableScheduling
-@SpringBootApplication
+@SpringBootApplication(
+        scanBasePackages = {
+                "pl.kathelan.cryptosageapp",
+                "pl.kathelan.notificationmodule",
+                "pl.kathelan.commons"
+        }
+)
 @Slf4j
 public class CryptoSageApp {
 

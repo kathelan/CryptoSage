@@ -6,7 +6,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import pl.kathelan.cryptosageapp.zonda.dtos.CryptoPair;
-import pl.kathelan.cryptosageapp.zonda.dtos.Signal;
+import pl.kathelan.cryptosageapp.zonda.dtos.SignalType;
 
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
@@ -26,9 +26,9 @@ class WalletOperationServiceUnitTest {
     @Test
     void onSignalGenerated_initializesWalletsAndProcessesBuySignal() {
         CryptoPair cryptoPair = CryptoPair.BTC_PLN;
-        Signal signal = Signal.BUY;
+        SignalType signalType = SignalType.BUY;
 
-        walletOperationService.onSignalGenerated(cryptoPair, signal);
+        walletOperationService.onSignalGenerated(cryptoPair, signalType);
 
         verify(walletInitializationService).initializeWallets();
         verify(tradingService).buyCrypto(eq(cryptoPair));
@@ -38,9 +38,9 @@ class WalletOperationServiceUnitTest {
     @Test
     void onSignalGenerated_initializesWalletsAndProcessesSellSignal() {
         CryptoPair cryptoPair = CryptoPair.ETH_PLN;
-        Signal signal = Signal.SELL;
+        SignalType signalType = SignalType.SELL;
 
-        walletOperationService.onSignalGenerated(cryptoPair, signal);
+        walletOperationService.onSignalGenerated(cryptoPair, signalType);
 
         verify(walletInitializationService).initializeWallets();
         verify(tradingService).sellCrypto(eq(cryptoPair));
@@ -50,9 +50,9 @@ class WalletOperationServiceUnitTest {
     @Test
     void onSignalGenerated_initializesWalletsAndProcessesHoldSignal() {
         CryptoPair cryptoPair = CryptoPair.SOL_PLN;
-        Signal signal = Signal.HOLD;
+        SignalType signalType = SignalType.HOLD;
 
-        walletOperationService.onSignalGenerated(cryptoPair, signal);
+        walletOperationService.onSignalGenerated(cryptoPair, signalType);
 
         verify(walletInitializationService).initializeWallets();
         verifyNoInteractions(tradingService);
@@ -61,9 +61,9 @@ class WalletOperationServiceUnitTest {
     @Test
     void onSignalGenerated_handlesUnknownSignal() {
         CryptoPair cryptoPair = CryptoPair.BTC_PLN;
-        Signal unknownSignal = Signal.UNKNOWN;
+        SignalType unknownSignalType = SignalType.UNKNOWN;
 
-        walletOperationService.onSignalGenerated(cryptoPair, unknownSignal);
+        walletOperationService.onSignalGenerated(cryptoPair, unknownSignalType);
 
         verify(walletInitializationService).initializeWallets();
         verifyNoInteractions(tradingService);
@@ -72,11 +72,11 @@ class WalletOperationServiceUnitTest {
     @Test
     void onSignalGenerated_catchesExceptionDuringTrading() {
         CryptoPair cryptoPair = CryptoPair.BTC_PLN;
-        Signal signal = Signal.BUY;
+        SignalType signalType = SignalType.BUY;
 
         doThrow(new RuntimeException("Trading error")).when(tradingService).buyCrypto(eq(cryptoPair));
 
-        walletOperationService.onSignalGenerated(cryptoPair, signal);
+        walletOperationService.onSignalGenerated(cryptoPair, signalType);
 
         verify(walletInitializationService).initializeWallets();
         verify(tradingService).buyCrypto(eq(cryptoPair));

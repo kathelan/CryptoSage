@@ -3,8 +3,6 @@ package pl.kathelan.cryptosageapp.zonda.model;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
 import pl.kathelan.cryptosageapp.common.model.CommonValues;
 
 import java.util.Objects;

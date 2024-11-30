@@ -83,4 +83,22 @@ CREATE TABLE IF NOT EXISTS PRICE_RECORD_DAILY (
                                             FOREIGN KEY (crypto_currency_pair_id) REFERENCES crypto_currency_pair(id)
     );
 
+CREATE TABLE IF NOT EXISTS alerts (
+                                      id BIGINT AUTO_INCREMENT PRIMARY KEY,
+                                      crypto_pair VARCHAR(255),
+    signal_type VARCHAR(255),
+    status VARCHAR(255),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    );
+
+CREATE TABLE IF NOT EXISTS signals (
+                                       id BIGINT AUTO_INCREMENT PRIMARY KEY,
+                                       crypto_pair VARCHAR(255),
+    signal_type VARCHAR(255),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    );
+
+
 

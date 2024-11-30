@@ -31,7 +31,7 @@ public class CryptoCurrencyPairService {
                 .collect(Collectors.toList());
     }
 
-    public synchronized void createCryptoCurrencyPair(CryptoPair currencyPair, List<Double> priceRecords) {
+    public void createCryptoCurrencyPair(CryptoPair currencyPair, List<Double> priceRecords) {
         CryptoCurrencyPair pair = findCryptoCurrencyByPair(currencyPair);
         Set<PriceRecord> newRecords = cryptoCurrencyMapper.mapPriceRecordsFromDouble(priceRecords, pair);
         pair.getPriceRecords().addAll(newRecords);

@@ -3,6 +3,17 @@ server:
     context-path: /api
 
 spring:
+  mail:
+    host: smtp.gmail.com
+    port: 465
+    username: maticzworrior@gmail.com
+    password: ${SMTP_PW}
+    properties:
+      mail.smtp.auth: true
+      mail.smtp.ssl.enable: true
+      mail.smtp.starttls.enable: true
+      mail.smtp.starttls.required: true
+      mail.smtp.socketFactory.class: javax.net.ssl.SSLSocketFactory
   jpa:
     defer-datasource-initialization: true
     hibernate:
@@ -19,6 +30,7 @@ spring:
       data-locations: classpath:db/create-crypto-pairs-1.sql
       platform: h2
 
+
 logging:
   file:
     path: /home/mateusz/apps/app-logs/crypto-app
@@ -30,3 +42,11 @@ logging:
 
 scheduler:
   enabled: true
+
+app:
+  notification:
+    email:
+      recipients:
+        - mateuszdeptulski@gmail.com
+
+

@@ -1,1 +1,4 @@
 rootProject.name = 'CryptoSageApp'
+
+include 'commons'
+include 'notification-module'

@@ -1,6 +1,6 @@
 package pl.kathelan.cryptosageapp.zonda.dtos;
 
-public enum Signal {
+public enum SignalType {
 
     BUY,
     SELL,

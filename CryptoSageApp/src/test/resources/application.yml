@@ -15,3 +15,9 @@ spring:
     show-sql: true
 scheduler:
   enabled: false
+alerts:
+  scheduler:
+    enabled: false
+notification:
+  channel:
+    enabled: false

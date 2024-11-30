@@ -37,7 +37,7 @@ public interface CryptoCurrencyPairRepository extends JpaRepository<CryptoCurren
 
     @Query(value = """
                 select c from cryptoCurrencyPair c
-                join fetch c.priceRecords pr
+                left join fetch c.priceRecords pr
                 where c.cryptoPair = :cryptoPair
                 """)
     Optional<CryptoCurrencyPair> findByCryptoPairWithPriceRecords(CryptoPair cryptoPair);
