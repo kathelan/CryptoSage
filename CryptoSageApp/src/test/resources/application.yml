@@ -18,6 +18,9 @@ scheduler:
 alerts:
   scheduler:
     enabled: false
+signals:
+  scheduler:
+    enabled: false
 notification:
   channel:
     enabled: false

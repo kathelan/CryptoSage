@@ -6,6 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 import pl.kathelan.cryptosageapp.zonda.model.Signal;
 import pl.kathelan.cryptosageapp.zonda.repositories.SignalRepository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -39,5 +40,10 @@ public class SignalService {
         if (allSame) {
             alertService.createAlert(cryptoPair, signalType);
         }
+    }
+
+    @Transactional
+    public void deleteByCreatedAtBefore(LocalDateTime localDateTime) {
+        signalRepository.deleteByCreatedAtBefore(localDateTime);
     }
 }

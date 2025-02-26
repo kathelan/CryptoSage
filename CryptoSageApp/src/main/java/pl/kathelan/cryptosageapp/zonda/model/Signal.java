@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import pl.kathelan.cryptosageapp.common.model.CommonValues;
-import pl.kathelan.cryptosageapp.zonda.dtos.SignalType;
 
 import java.util.Objects;
 
