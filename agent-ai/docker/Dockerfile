@@ -5,7 +5,7 @@ FROM gradle:jdk21 AS builder
 WORKDIR /app
 
 # Skopiuj pliki Gradle i źródła do kontenera
-COPY ../src /app/src
+COPY src ./src
 
 # Zbuduj aplikację za pomocą Gradle
 RUN gradle build --no-daemon
