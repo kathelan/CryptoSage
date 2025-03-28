@@ -1,3 +1,15 @@
+server:
+  servlet:
+    context-path: /api
+
 spring:
-  profiles:
-    active: local
+  jpa:
+    defer-datasource-initialization: true
+    hibernate:
+      ddl-auto: none
+    database: h2
+  datasource:
+    url: ${DB_AI_URL}
+    username: ${DB_AI_USERNAME}
+    password: ${DB_AI_PASSWORD}
+    driver-class-name: org.h2.Driver
