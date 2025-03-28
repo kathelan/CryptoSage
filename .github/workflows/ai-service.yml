@@ -8,7 +8,7 @@ on:
       - "agent-ai/**"
 
 jobs:
-  build-and-push-ai-service:
+  build-and-push-agent-ai:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -18,13 +18,13 @@ jobs:
         run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
 
       - name: Build the Docker image for AI Service
-        run: docker build -t ${{ secrets.DOCKER_USERNAME }}/ai-service:latest ./ai-service
+        run: docker build -t ${{ secrets.DOCKER_USERNAME }}/agent-ai:latest ./agent-ai/docker
 
       - name: Push to Docker Hub
-        run: docker push ${{ secrets.DOCKER_USERNAME }}/ai-service:latest
+        run: docker push ${{ secrets.DOCKER_USERNAME }}/agent-ai:latest
 
-  deploy-ai-service:
-    needs: build-and-push-ai-service
+  deploy-agent-ai:
+    needs: build-and-push-agent-ai
     runs-on: ubuntu-latest
     steps:
       - name: Deploy AI Service to VM via SSH
@@ -36,11 +36,11 @@ jobs:
           port: 22
           script: |
             set -e
-            docker pull ${{ secrets.DOCKER_USERNAME }}/ai-service:latest
-            docker stop ai-service || true
-            docker rm ai-service || true
-            docker run -d --restart always --name ai-service \
+            docker pull ${{ secrets.DOCKER_USERNAME }}/agent-ai:latest
+            docker stop agent-ai || true
+            docker rm agent-ai || true
+            docker run -d --restart always --name agent-ai \
               -e DB_URL=${{ secrets.AI_DB_URL }} \
               -e DB_USERNAME=${{ secrets.AI_DB_USERNAME }} \
               -e DB_PASSWORD=${{ secrets.AI_DB_PASSWORD }} \
-              -p 8081:8081 ${{ secrets.DOCKER_USERNAME }}/ai-service:latest
+              -p 8081:8081 ${{ secrets.DOCKER_USERNAME }}/agent-ai:latest
