@@ -5,10 +5,12 @@ FROM gradle:jdk21 AS builder
 WORKDIR /app
 
 # Skopiuj pliki Gradle i źródła do kontenera
+COPY build.gradle settings.gradle ./
 COPY src ./src
 
+RUN gradle --version
 # Zbuduj aplikację za pomocą Gradle
-RUN gradle build --no-daemon
+RUN gradle build --no-daemon --stacktrace
 
 # Etap 2: Run - użycie lżejszego obrazu JDK, aby uruchomić aplikację
 FROM openjdk:21-jdk
