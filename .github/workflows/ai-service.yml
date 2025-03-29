@@ -40,7 +40,7 @@ jobs:
             docker stop agent-ai || true
             docker rm agent-ai || true
             docker run -d --restart always --name agent-ai \
-              -e DB_URL=${{ secrets.DB_AI_URL }} \
-              -e DB_USERNAME=${{ secrets.DB_AI_USERNAME }} \
-              -e DB_PASSWORD=${{ secrets.DB_AI_PASSWORD }} \
+              -e DB_AI_URL=${{ secrets.DB_AI_URL }} \
+              -e DB_AI_USERNAME=${{ secrets.DB_AI_USERNAME }} \
+              -e DB_AI_PASSWORD=${{ secrets.DB_AI_PASSWORD }} \
               -p 8081:8081 ${{ secrets.DOCKER_USERNAME }}/agent-ai:latest
