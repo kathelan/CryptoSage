@@ -5,6 +5,7 @@ server:
 spring:
   jpa:
     defer-datasource-initialization: true
+    database-platform: org.hibernate.dialect.H2Dialect
     hibernate:
       ddl-auto: none
     database: h2
@@ -13,3 +14,7 @@ spring:
     username: ${DB_AI_USERNAME}
     password: ${DB_AI_PASSWORD}
     driver-class-name: org.h2.Driver
+logging:
+  level:
+    org.springframework.jdbc.datasource: DEBUG
+    com.zaxxer.hikari: DEBUG
