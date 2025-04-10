@@ -31,7 +31,7 @@ jobs:
           host: ${{ secrets.VM_HOST }}
           username: ${{ secrets.VM_USER }}
           port: 22
-          private_key: ${{ secrets.VPS_PRIVATE_KEY }}
+          key: ${{ secrets.VPS_PRIVATE_KEY }}
           script: |
             set -e
             docker pull ${{ secrets.DOCKER_USERNAME }}/cryptosage:latest
